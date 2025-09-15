@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}meet{% endblock %}
+
+{% block content %}
+<section class="py-20 px-12">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16">
+      <h1 class="mb-6 font-heading text-6xl font-medium">Meet The Experts</h1>
+      <p class="text-xl text-gray-500 max-w-3xl mx-auto">Connect with industry professionals and experienced mentors who can guide your academic and career journey. Get personalized advice from experts in your field of interest.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+      <div class="bg-white border border-gray-100 rounded-3xl p-8 hover:shadow-lg transition duration-300">
+        <div class="text-center mb-6">
+          <img class="w-24 h-24 object-cover rounded-full mx-auto mb-4" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" alt="Expert"/>
+          <h3 class="mb-2 font-heading text-2xl font-medium">Dr. James Wilson</h3>
+          <p class="text-blue-500 font-medium mb-2">Computer Science Professor</p>
+          <p class="text-gray-500 text-sm">15+ years experience</p>
+        </div>
+        <p class="text-gray-500 mb-6">Specializes in AI, Machine Learning, and Software Engineering. Former Google engineer with extensive industry experience.</p>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span class="px-3 py-1 bg-blue-100 text-blue-600 text-sm rounded-full">AI/ML</span>
+          <span class="px-3 py-1 bg-blue-100 text-blue-600 text-sm rounded-full">Software Engineering</span>
+          <span class="px-3 py-1 bg-blue-100 text-blue-600 text-sm rounded-full">Career Guidance</span>
+        </div>
+        <a href="#" class="inline-flex justify-center items-center text-center w-full h-12 font-semibold text-white hover:text-white focus:text-white bg-blue-500 hover:bg-blue-600 focus:bg-blue-600 rounded-full focus:ring-4 focus:ring-blue-200 transition duration-200">Book Session</a>
+      </div>
+      <div class="bg-white border border-gray-100 rounded-3xl p-8 hover:shadow-lg transition duration-300">
+        <div class="text-center mb-6">
+          <img class="w-24 h-24 object-cover rounded-full mx-auto mb-4" src="https://images.unsplash.com/photo-1677594333635-ec90040703d5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzMzIzMzB8MHwxfHNlYXJjaHwxfHxjYW1wdXMlMjBleHBlcnRzfGVufDB8Mnx8fDE3NTQyNDgwNjh8MA&ixlib=rb-4.1.0&q=80&w=1080&w=450" alt="Expert"/>
+          <h3 class="mb-2 font-heading text-2xl font-medium">Sarah Martinez</h3>
+          <p class="text-blue-500 font-medium mb-2">Marketing Director</p>
+          <p class="text-gray-500 text-sm">12+ years experience</p>
+        </div>
+        <p class="text-gray-500 mb-6">Digital marketing strategist with expertise in brand management, social media, and growth hacking for startups.</p>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span class="px-3 py-1 bg-blue-100 text-blue-600 text-sm rounded-full">Digital Marketing</span>
+          <span class="px-3 py-1 bg-blue-100 text-blue-600 text-sm rounded-full">Brand Strategy</span>
+          <span class="px-3 py-1 bg-blue-100 text-blue-600 text-sm rounded-full">Entrepreneurship</span>
+        </div>
+        <a href="#" class="inline-flex justify-center items-center text-center w-full h-12 font-semibold text-white hover:text-white focus:text-white bg-blue-500 hover:bg-blue-600 focus:bg-blue-600 rounded-full focus:ring-4 focus:ring-blue-200 transition duration-200">Book Session</a>
+      </div>
+      <div class="bg-white border border-gray-100 rounded-3xl p-8 hover:shadow-lg transition duration-300">
+        <div class="text-center mb-6">
+          <img class="w-24 h-24 object-cover rounded-full mx-auto mb-4" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" alt="Expert"/>
+          <h3 class="mb-2 font-heading text-2xl font-medium">Michael Chen</h3>
+          <p class="text-blue-500 font-medium mb-2">Financial Analyst</p>
+          <p class="text-gray-500 text-sm">10+ years experience</p>
+        </div>
+        <p class="text-gray-500 mb-6">Investment banking and financial planning expert. Helps students understand finance careers and investment strategies.</p>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span class="px-3 py-1 bg-blue-100 text-blue-600 text-sm rounded-full">Finance</span>
+          <span class="px-3 py-1 bg-blue-100 text-blue-600 text-sm rounded-full">Investment</span>
+          <span class="px-3 py-1 bg-blue-100 text-blue-600 text-sm rounded-full">Career Planning</span>
+        </div>
+        <a href="#" class="inline-flex justify-center items-center text-center w-full h-12 font-semibold text-white hover:text-white focus:text-white bg-blue-500 hover:bg-blue-600 focus:bg-blue-600 rounded-full focus:ring-4 focus:ring-blue-200 transition duration-200">Book Session</a>
+      </div>
+      <div class="bg-white border border-gray-100 rounded-3xl p-8 hover:shadow-lg transition duration-300">
+        <div class="text-center mb-6">
+          <img class="w-24 h-24 object-cover rounded-full mx-auto mb-4" src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face" alt="Expert"/>
+          <h3 class="mb-2 font-heading text-2xl font-medium">Dr. Emily Rodriguez</h3>
+          <p class="text-blue-500 font-medium mb-2">Medical Researcher</p>
+          <p class="text-gray-500 text-sm">18+ years experience</p>
+        </div>
+        <p class="text-gray-500 mb-6">Leading researcher in biomedical sciences with publications in top journals. Guides pre-med and research students.</p>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span class="px-3 py-1 bg-blue-100 text-blue-600 text-sm rounded-full">Medical Research</span>
+          <span class="px-3 py-1 bg-blue-100 text-blue-600 text-sm rounded-full">Healthcare</span>
+          <span class="px-3 py-1 bg-blue-100 text-blue-600 text-sm rounded-full">Academic Writing</span>
+        </div>
+        <a href="#" class="inline-flex justify-center items-center text-center w-full h-12 font-semibold text-white hover:text-white focus:text-white bg-blue-500 hover:bg-blue-600 focus:bg-blue-600 rounded-full focus:ring-4 focus:ring-blue-200 transition duration-200">Book Session</a>
+      </div>
+      <div class="bg-white border border-gray-100 rounded-3xl p-8 hover:shadow-lg transition duration-300">
+        <div class="text-center mb-6">
+          <img class="w-24 h-24 object-cover rounded-full mx-auto mb-4" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face" alt="Expert"/>
+          <h3 class="mb-2 font-heading text-2xl font-medium">David Thompson</h3>
+          <p class="text-blue-500 font-medium mb-2">UX/UI Designer</p>
+          <p class="text-gray-500 text-sm">8+ years experience</p>
+        </div>
+        <p class="text-gray-500 mb-6">Creative director with experience at top design agencies. Specializes in user experience and product design.</p>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span class="px-3 py-1 bg-blue-100 text-blue-600 text-sm rounded-full">UX/UI Design</span>
+          <span class="px-3 py-1 bg-blue-100 text-blue-600 text-sm rounded-full">Product Design</span>
+          <span class="px-3 py-1 bg-blue-100 text-blue-600 text-sm rounded-full">Creative Direction</span>
+        </div>
+        <a href="#" class="inline-flex justify-center items-center text-center w-full h-12 font-semibold text-white hover:text-white focus:text-white bg-blue-500 hover:bg-blue-600 focus:bg-blue-600 rounded-full focus:ring-4 focus:ring-blue-200 transition duration-200">Book Session</a>
+      </div>
+      <div class="bg-white border border-gray-100 rounded-3xl p-8 hover:shadow-lg transition duration-300">
+        <div class="text-center mb-6">
+          <img class="w-24 h-24 object-cover rounded-full mx-auto mb-4" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop&crop=face" alt="Expert"/>
+          <h3 class="mb-2 font-heading text-2xl font-medium">Lisa Park</h3>
+          <p class="text-blue-500 font-medium mb-2">Data Scientist</p>
+          <p class="text-gray-500 text-sm">9+ years experience</p>
+        </div>
+        <p class="text-gray-500 mb-6">Big data analytics expert with experience in machine learning, statistics, and business intelligence solutions.</p>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span class="px-3 py-1 bg-blue-100 text-blue-600 text-sm rounded-full">Data Science</span>
+          <span class="px-3 py-1 bg-blue-100 text-blue-600 text-sm rounded-full">Analytics</span>
+          <span class="px-3 py-1 bg-blue-100 text-blue-600 text-sm rounded-full">Statistics</span>
+        </div>
+        <a href="#" class="inline-flex justify-center items-center text-center w-full h-12 font-semibold text-white hover:text-white focus:text-white bg-blue-500 hover:bg-blue-600 focus:bg-blue-600 rounded-full focus:ring-4 focus:ring-blue-200 transition duration-200">Book Session</a>
+      </div>
+    </div>
+    <div class="text-center"><a href="#" class="inline-flex justify-center items-center text-center h-14 py-6 px-10 font-semibold text-black hover:text-black focus:text-black bg-transparent hover:bg-gray-50 focus:bg-gray-50 border border-gray-300 rounded-full focus:ring-4 focus:ring-gray-200 transition duration-200">Load More Experts</a></div>
+  </div>
+</section>
+
+{% endblock %}

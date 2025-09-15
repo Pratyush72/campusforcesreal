@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Membership{% endblock %}
+
+{% block content %}
+
+
+<div class="flex-col absolute top-25 right-4 mb-6 bg-white border border-gray-300 rounded-md shadow-md p-4 w-84 text-left">
+  <div class="mb-2">
+    <p class="text-sm font-semibold text-red-700">Available Coins: <i class="fa-solid fa-sack-dollar"></i> {{ user.coins }}</p>
+  </div>
+  <div>
+    <p class="text-sm font-semibold text-red-700">Coin Value:(10 coins = ₹1): <span> ₹{{ coin_value }}</span>
+</p>
+  </div>
+</div>
+
+
+<div class=" bg-white text-white py-10 min-h-screen">
+<div class=" bg-white text-white py-10 min-h-screen">
+<div class=" bg-white text-white py-10 min-h-screen">
+
+<h1 class="bg-white-100 text-yellow-700 border border-yellow-300 text-3xl font-bold mb-10 px-8 py-4 rounded-lg shadow-lg max-w-3xl mx-auto text-center font-sans">
+  Choose Your CampusForce Plan
+</h1>
+
+
+
+  <div class="flex flex-wrap justify-center gap-6 px-4">
+
+    <!-- Free Plan -->
+    <div class="bg-white-100 border border-yellow-300 rounded-xl w-80 p-6 shadow-md">
+      <h2 class="text-xl text-yellow-700 font-semibold mb-2">Free Plan</h2>
+      <p class="text-lg font-bold text-yellow-400">₹0</p>
+      <p class="text-sm mt-1 mb-4 text-yellow-600">Start your journey with basic features</p>
+      <ul class="text-left text-yellow-700 text-sm space-y-2">
+        <li>✔️ 50 coins on signup</li>
+        <li>✔️ Free notes download</li>
+        <li>✔️ Upload and share your notes</li>
+        <li>✔️ Earn coins by uploading content</li>
+        <li>✔️ View frontend projects (limited)</li>
+      </ul>
+      <button class="mt-4 w-full bg-indigo-100 text-yellow-900 border border-yellow-400 cursor-not-allowed py-2 rounded-md text-sm">Your Current Plan</button>
+    </div>
+
+    <!-- Project Pass -->
+    <div class="bg-indigo-100 border border-yellow-300 rounded-xl w-80 p-6 shadow-md">
+      <h2 class="text-xl text-yellow-700 font-semibold mb-2">Project Pass</h2>
+        <span class="mb-2 inline-block font-medium text-pink-500">Most popular</span>
+      <p class="text-lg font-bold text-yellow-600 mt-2">₹199 <span class="text-sm text-gray-400">(₹499 value)</span></p>
+      <p class="text-sm mt-1 mb-4 text-yellow-600">Perfect for frontend learners</p>
+      <ul class="text-left text-yellow-700 text-sm space-y-2">
+        <li>✔️ All Free Plan features</li>
+        <li>✔️ Access frontend clone projects</li>
+        <li>✔️ Download HTML/CSS/JS code</li>
+        <li>✔️ Resume builder access</li>
+        <li>✔️ Earn coins for project submissions</li>
+      </ul>
+      <form method="POST" action="#">
+        {% csrf_token %}
+        <input type="hidden" name="plan" value="project">
+        <button type="submit" class=" mt-4 bg-green-500 hover:bg-green-600 w-full py-2 rounded-md text-sm">Get Project Pass</button>
+      </form>
+    </div>
+
+    <!-- Premium Pass -->
+    <div class="bg-white-100 border border-yellow-300 rounded-xl w-80 p-6 shadow-md">
+      <h2 class="text-xl text-yellow-700 font-semibold mb-2">Premium Pass</h2>
+      <p class="text-lg font-bold text-yellow-600">₹499 <span class="text-sm text-gray-400">(₹1500 value)</span></p>
+      <p class="text-sm mt-1 mb-4 text-yellow-600">All-in-one access for career growth</p>
+      <ul class="text-left text-yellow-700 text-sm space-y-2">
+        <li>✔️ All Project Pass features</li>
+        <li>✔️ Access live backend projects</li>
+        <li>✔️ Certificate for project completion</li>
+        <li>✔️ Priority support + mentorship</li>
+        <li>✔️ Future tools & premium content</li>
+      </ul>
+      <form method="POST" action="#">
+        {% csrf_token %}
+        <input type="hidden" name="plan" value="premium">
+        <button type="submit" class=" mt-4 bg-yellow-500 hover:bg-yellow-600 w-full py-2 rounded-md text-sm">Get Premium</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

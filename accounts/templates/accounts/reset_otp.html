@@ -1,0 +1,31 @@
+<!-- accounts/templates/accounts/reset_otp.html -->
+{% extends 'base.html' %}
+{% block content %}
+    <title>Verify OTP & New Password</title>
+</head>
+<body>
+    <h2>Enter OTP and New Password</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: red;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <label for="otp">OTP:</label><br>
+        <input type="text" name="otp" required><br><br>
+
+        <label for="new_password">New Password:</label><br>
+        <input type="password" name="new_password" required><br><br>
+
+        <label for="confirm_password">Confirm New Password:</label><br>
+        <input type="password" name="confirm_password" required><br><br>
+
+        <button type="submit">Reset Password</button>
+    </form>
+
+    <br>
+    <a href="{% url 'login' %}">Back to Login</a>
+{% endblock %}

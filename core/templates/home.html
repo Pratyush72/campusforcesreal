@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-10">
+
+  <!-- Hero Section -->
+  <div class="text-center mb-16">
+    <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight animate-pulse">
+      Welcome to <span class="text-indigo-600">CampusForce 🚀</span>
+    </h1>
+    <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+      Free Notes, Projects, Internships & Skill Resources - All in One Platform, built for students.
+    </p>
+    {% if not user.is_authenticated %}
+      <a href="{% url 'signup' %}" 
+         class="bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-2xl shadow-lg text-lg mr-3 transition transform hover:scale-105">
+         Get Started Free
+      </a>
+      <a href="{% url 'login' %}" 
+         class="border-2 border-indigo-600 hover:bg-indigo-600 hover:text-white text-indigo-600 px-8 py-4 rounded-2xl text-lg transition transform hover:scale-105">
+         Login
+      </a>
+    {% endif %}
+  </div>
+
+  <!-- Ad Banner -->
+  <div class="bg-yellow-100 text-center p-8 rounded-2xl shadow mb-16 animate-bounce">
+    <h5 class="text-xl font-semibold text-yellow-700">🔥 Launch Offer</h5>
+    <p class="text-gray-700">Get <b>Project Pass FREE</b> at <span class="text-yellow-900">1900 Coins</span></p>
+    <p class="text-gray-500 text-sm">Start earning CampusCoins & unlock exclusive content.</p>
+  </div>
+
+  <!-- Feature Highlights -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+    <div class="bg-white p-8 rounded-2xl shadow hover:shadow-2xl transition transform hover:-translate-y-2">
+      <h4 class="text-2xl font-bold mb-3">📘 Free Notes</h4>
+      <p class="text-gray-600">Download DSA, ML, Java, Python notes instantly without login.</p>
+    </div>
+    <div class="bg-white p-8 rounded-2xl shadow hover:shadow-2xl transition transform hover:-translate-y-2">
+      <h4 class="text-2xl font-bold mb-3">🛠️ Frontend Projects</h4>
+      <p class="text-gray-600">Download and practice real-world frontend clone projects.</p>
+    </div>
+    <div class="bg-white p-8 rounded-2xl shadow hover:shadow-2xl transition transform hover:-translate-y-2">
+      <h4 class="text-2xl font-bold mb-3">🎯 CampusCoin Rewards</h4>
+      <p class="text-gray-600">Earn coins by uploading content, viewing notes, and completing tasks!</p>
+    </div>
+  </div>
+
+  <!-- Stats Section -->
+  <div class="bg-black text-white py-16 rounded-2xl shadow mb-16">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+      <div>
+        <h3 class="text-5xl font-extrabold">5000+</h3>
+        <p class="text-gray-400">Students</p>
+      </div>
+      <div>
+        <h3 class="text-5xl font-extrabold">200+</h3>
+        <p class="text-gray-400">Projects</p>
+      </div>
+      <div>
+        <h3 class="text-5xl font-extrabold">100+</h3>
+        <p class="text-gray-400">Companies</p>
+      </div>
+      <div>
+        <h3 class="text-5xl font-extrabold">50K+</h3>
+        <p class="text-gray-400">Downloads</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- How It Works -->
+  <div class="text-center mb-16">
+    <h2 class="text-4xl font-extrabold mb-10">How CampusForce Works</h2>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div class="p-8 bg-white rounded-2xl shadow hover:shadow-lg transition">
+        <h5 class="font-bold text-xl mb-2">👋 Sign Up</h5>
+        <p class="text-gray-600">Create your free account & get <b>50 coins instantly</b>.</p>
+      </div>
+      <div class="p-8 bg-white rounded-2xl shadow hover:shadow-lg transition">
+        <h5 class="font-bold text-xl mb-2">📥 Download Notes</h5>
+        <p class="text-gray-600">Earn <b>10 coins</b> every time you download notes.</p>
+      </div>
+      <div class="p-8 bg-white rounded-2xl shadow hover:shadow-lg transition">
+        <h5 class="font-bold text-xl mb-2">📤 Upload Content</h5>
+        <p class="text-gray-600">Earn <b>20 coins</b> by uploading ML/DSA projects.</p>
+      </div>
+      <div class="p-8 bg-white rounded-2xl shadow hover:shadow-lg transition">
+        <h5 class="font-bold text-xl mb-2">🎁 Redeem Rewards</h5>
+        <p class="text-gray-600">Use coins for <b>premium access & certificates</b>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Testimonials -->
+  <div class="bg-gray-100 py-16 rounded-2xl mb-16">
+    <h2 class="text-4xl font-bold text-center mb-12">What Students Say</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg">
+        <p class="text-gray-600">“CampusForce helped me crack my internship with great notes!”</p>
+        <h5 class="mt-4 font-bold">- Riya Sharma</h5>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg">
+        <p class="text-gray-600">“I earned coins just by sharing my projects. Amazing idea!”</p>
+        <h5 class="mt-4 font-bold">- Arjun Verma</h5>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg">
+        <p class="text-gray-600">“Best platform for students. Free resources + rewards 🎉.”</p>
+        <h5 class="mt-4 font-bold">- Neha Gupta</h5>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <div class="mb-16">
+    <h2 class="text-4xl font-bold text-center mb-10">Frequently Asked Questions</h2>
+    <div class="space-y-6 max-w-3xl mx-auto">
+      <details class="bg-white p-6 rounded-lg shadow">
+        <summary class="font-semibold text-lg cursor-pointer">How do I earn CampusCoins?</summary>
+        <p class="mt-2 text-gray-600">You earn coins by signing up, downloading notes, uploading projects, and completing tasks.</p>
+      </details>
+      <details class="bg-white p-6 rounded-lg shadow">
+        <summary class="font-semibold text-lg cursor-pointer">Can I redeem coins for real money?</summary>
+        <p class="mt-2 text-gray-600">Currently coins can be used for unlocking premium content, not direct cash withdrawal.</p>
+      </details>
+      <details class="bg-white p-6 rounded-lg shadow">
+        <summary class="font-semibold text-lg cursor-pointer">Are the notes free?</summary>
+        <p class="mt-2 text-gray-600">Yes! All notes are free to download. You even earn coins while using them.</p>
+      </details>
+    </div>
+  </div>
+
+  <!-- Newsletter -->
+  <div class="bg-indigo-600 text-white py-16 px-8 rounded-2xl shadow mb-16 text-center">
+    <h2 class="text-3xl font-bold mb-6">Join Our Student Community</h2>
+    <p class="mb-6">Subscribe to get free resources, projects & internship alerts directly in your inbox.</p>
+    <form class="flex flex-col md:flex-row justify-center items-center gap-4 max-w-2xl mx-auto">
+      <input type="email" placeholder="Enter your email" class="w-full px-4 py-3 rounded-xl text-black focus:outline-none">
+      <button type="submit" class="bg-black text-white px-6 py-3 rounded-xl font-bold hover:bg-gray-800 transition">Subscribe</button>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

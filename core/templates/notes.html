@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% block title %}Notes{% endblock %} 
+{% block content %}
+
+<header class="text-center text-black bg-white mt-5 py-5 text-2xl font-bold">
+  NLP Learning Resources
+</header>
+
+<main>
+  <!-- Section 1 -->
+  <section class="flex flex-wrap justify-center gap-5 p-5">
+    <div class="bg-white-100 border border-yellow-300 rounded-xl border-2 border-black rounded-xl p-5 w-[340px] text-center shadow-md">
+      <h2 class="text-xl font-bold mb-3">Python Basics</h2>
+      <p class="text-base text-gray-600 mb-4">Learn the fundamentals of Python programming.</p>
+      <div class="flex justify-center gap-3">
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="readPDF('/static/notes/Python.pdf')">Read PDF</button>
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="downloadPDF('/static/notes/python.pdf')">Download PDF</button>
+      </div>
+    </div>
+
+    <div class="bg-white-100 border border-yellow-300 rounded-xl border-2 border-black rounded-xl p-5 w-[340px] text-center shadow-md">
+      <h2 class="text-xl font-bold mb-3">Data Structures</h2>
+      <p class="text-base text-gray-600 mb-4">Understand lists, tuples, sets, and dictionaries in Python.</p>
+      <div class="flex justify-center gap-3">
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="readPDF('/static/pythonnotes/python.pdf')">Read PDF</button>
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="downloadPDF('/static/pythonnotes/python.pdf')">Download PDF</button>
+      </div>
+    </div>
+
+    <!-- Duplicate card example -->
+    <div class="bg-white-100 border border-yellow-300 rounded-xl border-2 border-black rounded-xl p-5 w-[340px] text-center shadow-md">
+      <h2 class="text-xl font-bold mb-3">Data Structures</h2>
+      <p class="text-base text-gray-600 mb-4">Understand lists, tuples, sets, and dictionaries in Python.</p>
+      <div class="flex justify-center gap-3">
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="readPDF('/static/pythonnotes/python.pdf')">Read PDF</button>
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="downloadPDF('/static/pythonnotes/python.pdf')">Download PDF</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Repeat Section (if needed) -->
+  <section class="flex flex-wrap justify-center gap-5 p-5">
+    <div class="bg-white-100 border border-yellow-300 rounded-xl border-2 border-black rounded-xl p-5 w-[340px] text-center shadow-md">
+      <h2 class="text-xl font-bold mb-3">Data Structures</h2>
+      <p class="text-base text-gray-600 mb-4">Understand lists, tuples, sets, and dictionaries in Python.</p>
+      <div class="flex justify-center gap-3">
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="readPDF('/static/pythonnotes/python.pdf')">Read PDF</button>
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="downloadPDF('/static/pythonnotes/python.pdf')">Download PDF</button>
+      </div>
+    </div>
+    <div class="bg-white-100 border border-yellow-300 rounded-xl border-2 border-black rounded-xl p-5 w-[340px] text-center shadow-md">
+      <h2 class="text-xl font-bold mb-3">Data Structures</h2>
+      <p class="text-base text-gray-600 mb-4">Understand lists, tuples, sets, and dictionaries in Python.</p>
+      <div class="flex justify-center gap-3">
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="readPDF('/static/pythonnotes/python.pdf')">Read PDF</button>
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="downloadPDF('/static/pythonnotes/python.pdf')">Download PDF</button>
+      </div>
+    </div>
+    <div class="bg-white-100 border border-yellow-300 rounded-xl border-2 border-black rounded-xl p-5 w-[340px] text-center shadow-md">
+      <h2 class="text-xl font-bold mb-3">Data Structures</h2>
+      <p class="text-base text-gray-600 mb-4">Understand lists, tuples, sets, and dictionaries in Python.</p>
+      <div class="flex justify-center gap-3">
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="readPDF('/static/pythonnotes/python.pdf')">Read PDF</button>
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="downloadPDF('/static/pythonnotes/python.pdf')">Download PDF</button>
+      </div>
+    </div>
+  </section>
+   <!-- Repeat Section (if needed) -->
+  <section class="flex flex-wrap justify-center gap-5 p-5">
+    <div class="bg-white-100 border border-yellow-300 rounded-xl border-2 border-black rounded-xl p-5 w-[340px] text-center shadow-md">
+      <h2 class="text-xl font-bold mb-3">Data Structures</h2>
+      <p class="text-base text-gray-600 mb-4">Understand lists, tuples, sets, and dictionaries in Python.</p>
+      <div class="flex justify-center gap-3">
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="readPDF('/static/pythonnotes/python.pdf')">Read PDF</button>
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="downloadPDF('/static/pythonnotes/python.pdf')">Download PDF</button>
+      </div>
+    </div>
+    <div class="bg-white-100 border border-yellow-300 rounded-xl border-2 border-black rounded-xl p-5 w-[340px] text-center shadow-md">
+      <h2 class="text-xl font-bold mb-3">Data Structures</h2>
+      <p class="text-base text-gray-600 mb-4">Understand lists, tuples, sets, and dictionaries in Python.</p>
+      <div class="flex justify-center gap-3">
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="readPDF('/static/pythonnotes/python.pdf')">Read PDF</button>
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="downloadPDF('/static/pythonnotes/python.pdf')">Download PDF</button>
+      </div>
+    </div>
+    <div class="bg-white-100 border border-yellow-300 rounded-xl border-2 border-black rounded-xl p-5 w-[340px] text-center shadow-md">
+      <h2 class="text-xl font-bold mb-3">Data Structures</h2>
+      <p class="text-base text-gray-600 mb-4">Understand lists, tuples, sets, and dictionaries in Python.</p>
+      <div class="flex justify-center gap-3">
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="readPDF('/static/pythonnotes/python.pdf')">Read PDF</button>
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="downloadPDF('/static/pythonnotes/python.pdf')">Download PDF</button>
+      </div>
+    </div>
+  </section>
+   <!-- Repeat Section (if needed) -->
+  <section class="flex flex-wrap justify-center gap-5 p-5">
+    <div class="bg-white-100 border border-yellow-300 rounded-xl border-2 border-black rounded-xl p-5 w-[340px] text-center shadow-md">
+      <h2 class="text-xl font-bold mb-3">Data Structures</h2>
+      <p class="text-base text-gray-600 mb-4">Understand lists, tuples, sets, and dictionaries in Python.</p>
+      <div class="flex justify-center gap-3">
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="readPDF('/static/pythonnotes/python.pdf')">Read PDF</button>
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="downloadPDF('/static/pythonnotes/python.pdf')">Download PDF</button>
+      </div>
+    </div>
+    <div class="bg-white-100 border border-yellow-300 rounded-xl border-2 border-black rounded-xl p-5 w-[340px] text-center shadow-md">
+      <h2 class="text-xl font-bold mb-3">Data Structures</h2>
+      <p class="text-base text-gray-600 mb-4">Understand lists, tuples, sets, and dictionaries in Python.</p>
+      <div class="flex justify-center gap-3">
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="readPDF('/static/pythonnotes/python.pdf')">Read PDF</button>
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="downloadPDF('/static/pythonnotes/python.pdf')">Download PDF</button>
+      </div>
+    </div>
+    <div class="bg-white-100 border border-yellow-300 rounded-xl border-2 border-black rounded-xl p-5 w-[340px] text-center shadow-md">
+      <h2 class="text-xl font-bold mb-3">Data Structures</h2>
+      <p class="text-base text-gray-600 mb-4">Understand lists, tuples, sets, and dictionaries in Python.</p>
+      <div class="flex justify-center gap-3">
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="readPDF('/static/pythonnotes/python.pdf')">Read PDF</button>
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="downloadPDF('/static/pythonnotes/python.pdf')">Download PDF</button>
+      </div>
+    </div>
+  </section>
+   <!-- Repeat Section (if needed) -->
+  <section class="flex flex-wrap justify-center gap-5 p-5">
+    <div class="bg-white-100 border border-yellow-300 rounded-xl border-2 border-black rounded-xl p-5 w-[340px] text-center shadow-md">
+      <h2 class="text-xl font-bold mb-3">Data Structures</h2>
+      <p class="text-base text-gray-600 mb-4">Understand lists, tuples, sets, and dictionaries in Python.</p>
+      <div class="flex justify-center gap-3">
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="readPDF('/static/pythonnotes/python.pdf')">Read PDF</button>
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="downloadPDF('/static/pythonnotes/python.pdf')">Download PDF</button>
+      </div>
+    </div>
+    <div class="bg-white-100 border border-yellow-300 rounded-xl border-2 border-black rounded-xl p-5 w-[340px] text-center shadow-md">
+      <h2 class="text-xl font-bold mb-3">Data Structures</h2>
+      <p class="text-base text-gray-600 mb-4">Understand lists, tuples, sets, and dictionaries in Python.</p>
+      <div class="flex justify-center gap-3">
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="readPDF('/static/pythonnotes/python.pdf')">Read PDF</button>
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="downloadPDF('/static/pythonnotes/python.pdf')">Download PDF</button>
+      </div>
+    </div>
+    <div class="bg-white-100 border border-yellow-300 rounded-xl border-2 border-black rounded-xl p-5 w-[340px] text-center shadow-md">
+      <h2 class="text-xl font-bold mb-3">Data Structures</h2>
+      <p class="text-base text-gray-600 mb-4">Understand lists, tuples, sets, and dictionaries in Python.</p>
+      <div class="flex justify-center gap-3">
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="readPDF('/static/pythonnotes/python.pdf')">Read PDF</button>
+        <button class="bg-black text-white px-4 py-2 rounded-md text-sm min-w-[120px] hover:bg-gray-800" onclick="downloadPDF('/static/pythonnotes/python.pdf')">Download PDF</button>
+      </div>
+    </div>
+  </section>
+
+  
+</main>
+
+<script>
+  function readPDF(filePath) {
+    window.open(filePath, '_blank');
+  }
+
+  function downloadPDF(filePath) {
+    const link = document.createElement('a');
+    link.href = filePath;
+    link.download = filePath.split('/').pop();
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+</script>
+
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+
+ {% if messages %}
+  <div class="alert alert-danger">
+      {% for message in messages %}
+    <p>{{ message }}</p>
+      {% endfor %}
+  </div>
+    {% endif %}
+
+  <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
+     {% if user.profile_pic %}
+      <div class="flex justify-center mb-6">
+        <img src="{{ user.profile_pic.url }}" alt="Profile Picture" class="w-32 h-32 rounded-full object-cover border-4 border-blue-300 shadow" />
+      </div>
+    {% endif %}
+
+<div class="flex-col mb-6 bg-white border border-gray-300 rounded-md shadow-md p-4 w-84 text-left">
+  <div class="mb-2">
+    <p class="text-sm font-semibold text-red-700">Available Coins: <i class="fa-solid fa-sack-dollar"></i> {{ user.coins }}</p>
+  </div>
+  <div>
+    <p class="text-sm font-semibold text-red-700">Coin Value:(10 coins = ₹1): <span></span>
+</p>
+  </div>
+</div>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      
+      <div class="mb-4">
+  <label class="block text-gray-700">Full Name</label>
+  <input type="text" name="username" value="{{ user.username }}" class="w-full border rounded p-2" />
+      </div>
+
+      <div class="mb-4">
+  <label class="block text-gray-700">Email</label>
+  <input type="email" value="{{ user.email }}" class="w-full border rounded p-2" disabled />
+      </div>
+
+      <div class="mb-4">
+  <label class="block text-gray-700">Phone Number</label>
+  <input type="text" name="mobile_number" value="{{ user.mobile_number }}" class="w-full border rounded p-2" />
+      </div>
+
+      <div class="mb-4">
+  <label class="block text-gray-700">Profile Picture</label>
+  <input type="file" name="profile_pic" class="w-full border rounded p-2" />
+      </div>
+
+      <div class="mb-4">
+  <label class="block text-gray-700">Membership Status</label>
+  <p class="font-semibold text-green-600">{{ user.membership_status }}</p>
+      </div>
+
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Update</button>
+    </form>
+  </div>
+{% endblock %}

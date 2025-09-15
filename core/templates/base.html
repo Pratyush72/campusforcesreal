@@ -1,0 +1,187 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CampusForce | {% block title %}Dashboard{% endblock %}</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'saturn-assets/css/style.css' %}">
+  <link rel="icon" type="image/png" href="{% static 'logo.png' %}" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById("mobile-sidebar");
+      sidebar.classList.toggle("hidden");
+    }
+  </script>
+</head>
+<body class="bg-gray-50">
+
+  <!-- Top Navbar -->
+  <div class="bg-white shadow-md p-4 flex justify-between items-center">
+    <h2 class="text-xl font-bold text-blue-600">📘 CAMPUSFORCES</h2>
+
+    <!-- Desktop Nav Links -->
+    <nav class="hidden md:flex flex justify-between items-center space-x-6 text-sm text-gray-700 ">
+      <ul class="hidden lg:flex ml-14 lg:w-auto lg:space-x-12">
+        <li class="group relative">
+          <a class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium" href="#">Profile</a>
+          <div class="hidden group-hover:block absolute top-full left-0 min-w-max max-w-xs p-4 z-30">
+            <div class="-mb-2 ml-8 w-4 h-4 rounded-sm bg-white border-l border-t border-gray-200 transform rotate-45"></div>
+            <div class="w-full max-w-xs bg-white border border-gray-100 rounded-3xl pt-4 pb-4 px-4">
+              
+              <div class="pb-3 mb-3 border-b border-gray-100">
+                <a class="block py-3 px-4 text-sm text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'featured' %}">Featured</a>
+                <a class="block py-3 px-4 text-sm text-gray-900 hover:bg-orange-50 rounded-lg" href="#">Solutions</a>
+              </div>
+
+              <div class="pb-3 mb-3 border-b border-gray-100">
+                <a class="flex mb-2 items-center py-3 px-4 text-sm text-gray-900 hover:bg-orange-50 rounded-lg" href="#">
+                  <img src="{% static 'saturn-assets/images/headers/icon-download.svg' %}" alt=""/>
+                  <span class="ml-3">Download</span>
+                </a>
+                <a class="flex mb-2 items-center py-3 px-4 text-sm text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'community' %}">
+                  <img src="{% static 'saturn-assets/images/headers/icon-slack.svg' %}" alt=""/>
+                  <span class="ml-3">Community</span>
+                </a>
+                <a class="flex mb-2 items-center py-3 px-4 text-sm text-gray-900 hover:bg-orange-50 rounded-lg" href="{% url 'help' %}">
+                  <img src="{% static 'saturn-assets/images/headers/icon-help.svg' %}" alt=""/>
+                  <span class="ml-3">Help</span>
+                </a>
+              </div>
+
+              {% if user.is_authenticated %}
+                <div class="flex justify-center">
+                  {% if user.profile_pic %}
+                    <img src="{{ user.profile_pic.url }}" alt="Profile Picture" class="w-10 h-10 rounded-full object-cover border-4 border-blue-300 " />
+                  {% else %}
+                    <img src="{% static 'default-profile.png' %}" alt="Default Profile" class="w-10 h-10 rounded-full object-cover border-4 border-blue-300 " />
+                  {% endif %}
+                </div>
+                <div class="mb-4 text-center text-sm text-gray-600">
+                  👋 Welcome, <strong>{{ user.username }}</strong><br/>
+                  <a href="{% url 'profile' %}" class="text-blue-600 hover:underline">Edit Profile</a>
+                </div>
+                <div class="flex items-center pb-3 mb-3 border-b border-gray-100"></div>
+                <div class="flex items-center">
+                  <i class="fa-solid fa-right-from-bracket"></i>
+                  <div class="ml-3">
+                    <a href="{% url 'logout' %}" class="block text-red-600 hover:text-red-800"> Logout</a>
+                  </div>
+                </div>
+              {% else %}
+                <a class="inline-block mr-9 text-sm font-semibold text-orange-900 hover:text-gray-900" href="{% url 'login' %}">Sign In</a>
+                <a href="{% url 'signup' %}" class="inline-block mr-9 text-sm font-semibold text-orange-900 hover:text-gray-900"> Signup</a>
+              {% endif %}
+            </div>
+          </div>
+        </li>
+      </ul>
+
+      <a href="{% url 'dashboard' %}" class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium"> Dashboard</a>
+      <a href="{% url 'notes' %}" class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium"> Notes</a>
+      <a href="{% url 'upload_notes' %}" class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium"> Upload</a>
+      <a href="{% url 'resume_builder' %}" class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium"> Resume</a>
+      <a href="{% url 'live_projects' %}" class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium"> Projects</a>
+      <a href="{% url 'membership' %}" class="inline-block text-sm text-gray-900 hover:text-orange-900 font-medium"> Membership</a>
+      <!-- Top Right Profile / Login -->
+<div class="flex items-center space-x-4">
+  {% if user.is_authenticated %}
+    {% if user.profile_pic %}
+      <a href="{% url 'profile' %}">
+        <img src="{{ user.profile_pic.url }}" alt="Profile Picture"
+             class="w-8 h-8 rounded-full object-cover border-2 border-blue-400">
+      </a>
+    {% else %}
+    {% endif %}
+  {% else %}
+    <a href="{% url 'login' %}" class="text-sm font-semibold text-orange-900 hover:text-gray-900">Sign In</a>
+  {% endif %}
+</div>
+
+    </nav>
+
+    <!-- Mobile Menu Button -->
+    <button onclick="toggleSidebar()" class="text-xl md:hidden">
+      ☰
+    </button>
+  </div>
+
+  <!-- Mobile Sidebar -->
+  <div id="mobile-sidebar" class="hidden fixed inset-y-0 right-0 w-64 bg-white shadow-xl z-50 p-6 overflow-y-auto md:hidden">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-blue-600">📘 CAMPUSFORCES</h2>
+      <button onclick="toggleSidebar()" class="text-xl font-bold text-gray-700 hover:text-red-600">×</button>
+    </div>
+
+    {% if user.is_authenticated %}
+      <div class="mb-4 text-center text-sm text-gray-600">
+        👋 Welcome, <strong>{{ user.username }}</strong><br/>
+        <a href="{% url 'profile' %}" class="text-blue-600 hover:underline">View Profile</a>
+      </div>
+    {% endif %}
+
+    <nav class="space-y-4 text-gray-700">
+      <a href="{% url 'dashboard' %}" class="block hover:text-blue-700">🏠 Dashboard</a>
+      <a href="{% url 'notes' %}" class="block hover:text-blue-700">📚 Notes</a>
+      <a href="{% url 'upload_notes' %}" class="block hover:text-blue-700">⬆️ Upload Notes</a>
+      <a href="{% url 'resume_builder' %}" class="block hover:text-blue-700">🧠 Resume Builder</a>
+      <a href="{% url 'live_projects' %}" class="block hover:text-blue-700">💼 Live Projects</a>
+      <a href="{% url 'membership' %}" class="block hover:text-blue-700">💰 Membership</a>
+      <a href="{% url 'profile' %}" class="block hover:text-blue-700">👤 Profile</a>
+
+      {% if user.is_authenticated %}
+        <a href="{% url 'logout' %}" class="block text-red-600 hover:text-red-800 fa-solid fa-right-from-bracket"> Logout</a>
+      {% else %}
+        <a href="{% url 'login' %}" class="block text-blue-600 hover:underline">🔐 Login</a>
+      {% endif %}
+    </nav>
+  </div>
+
+  <!-- Main Content -->
+  <main class="p-6">
+    {% block content %}
+    {% endblock %}
+  </main>
+
+ <footer class="bg-gray-50 border-t border-gray-200 py-12 px-6">
+  <div class="max-w-7xl mx-auto flex flex-col items-center">
+    <!-- Brand Name with Graduation Hat -->
+    <div class="flex items-center mb-6">
+      <span class="text-3xl font-extrabold text-blue-700">🎓 CAMPUSFORCES </span>
+    </div>
+
+    <!-- Description -->
+    <p class="text-center text-gray-500 mb-6 max-w-xl">
+      Connecting students with industry experts for better career guidance and mentorship.
+    </p>
+
+    <!-- Links -->
+    <div class="flex flex-wrap justify-center gap-6 mb-6">
+      <a href="#" class="text-gray-500 hover:text-gray-700 transition duration-200 font-medium">Privacy Policy</a>
+      <a href="#" class="text-gray-500 hover:text-gray-700 transition duration-200 font-medium">Terms of Service</a>
+      <a href="#" class="text-gray-500 hover:text-gray-700 transition duration-200 font-medium">Contact Us</a>
+    </div>
+
+    <!-- Social Icons -->
+    <div class="flex justify-center gap-6 mb-6">
+      <a href="#" class="text-gray-500 hover:text-blue-600 transition duration-200 text-xl"><i class="fa-brands fa-facebook"></i></a>
+      <a href="#" class="text-gray-500 hover:text-blue-400 transition duration-200 text-xl"><i class="fa-brands fa-twitter"></i></a>
+      <a href="#" class="text-gray-500 hover:text-pink-500 transition duration-200 text-xl"><i class="fa-brands fa-instagram"></i></a>
+      <a href="#" class="text-gray-500 hover:text-blue-700 transition duration-200 text-xl"><i class="fa-brands fa-linkedin"></i></a>
+    </div>
+
+    <!-- Copyright -->
+    <p class="text-center text-gray-400 text-sm">
+      © 2025 CampusForce. All rights reserved. Built for Students ❤️
+    </p>
+  </div>
+</footer>
+
+
+
+</body>
+</html>

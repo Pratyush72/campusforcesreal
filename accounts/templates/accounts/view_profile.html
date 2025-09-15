@@ -1,0 +1,33 @@
+<!-- templates/accounts/view_profile.html -->
+
+<h2>👤 Your Profile</h2>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <label>Profile Picture:</label><br>
+    {% if user.profile_picture %}
+        <img src="{{ user.profile_picture.url }}" width="120" height="120" style="border-radius: 50%;">
+    {% else %}
+        <p>No profile picture uploaded</p>
+    {% endif %}
+    <br>
+    <input type="file" name="profile_picture"><br><br>
+
+    <label>Full Name:</label>
+    <input type="text" name="full_name" value="{{ user.first_name }}" required><br><br>
+
+    <label>Email:</label>
+    <input type="email" value="{{ user.email }}" readonly><br><br>
+
+    <label>Phone Number:</label>
+    <input type="text" name="mobile_number" value="{{ user.mobile_number }}"><br><br>
+
+    <label>Membership Status:</label>
+    <input type="text" name="membership_status" value="{{ user.membership_status }}"><br><br>
+
+    <label>Coins:</label>
+    <input type="text" value="{{ user.coins }}" readonly><br><br>
+
+    <button type="submit">Update</button>
+</form>

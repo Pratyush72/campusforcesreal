@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="bg-gray-100 min-h-screen py-10 px-4">
+  <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-md">
+    <h1 class="text-3xl font-semibold text-center mb-6 text-blue-700">Upload Your Notes</h1>
+    {% if messages %}
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" class="space-y-4">
+      {% csrf_token %}
+      {% if form %}
+        {{ form.as_p }}
+        <button type="submit"
+                class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200">
+          Upload
+        </button>
+      {% else %}
+        <p class="text-red-500">Form is not available.</p>
+      {% endif %}
+    </form>
+
+    {% if success %}
+      <div class="mt-6 p-4 bg-green-100 text-green-800 border border-green-300 rounded-md">
+        ✅ {{ success }}
+      </div>
+    {% endif %}
+
+    {% if error %}
+      <div class="mt-6 p-4 bg-red-100 text-red-800 border border-red-300 rounded-md">
+        ❌ Error: {{ error }}
+      </div>
+    {% endif %}
+
+    {% if notes %}
+      <h2 class="mt-10 text-2xl font-semibold text-gray-800 border-b pb-2 mb-4">Uploaded Notes</h2>
+      <ul class="space-y-3">
+        {% for note in notes %}
+          <li class="bg-gray-50 p-4 rounded-md shadow-sm flex justify-between items-center">
+            <span class="text-gray-800 font-medium">{{ note.title }}</span>
+            <span class="text-sm text-gray-500">{{ note.uploaded_at|date:"M d, Y H:i" }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="mt-8 text-gray-500 italic">No notes uploaded yet.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
