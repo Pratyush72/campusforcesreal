@@ -150,6 +150,18 @@ USE_I18N = True
 
 import os
 
+
+
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')   # Gunicorn/Nginx serve karega
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'core', 'static'),         # App ke static folder
+]
+
 # Base directory
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
