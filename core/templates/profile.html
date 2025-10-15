@@ -32,7 +32,7 @@
       
       <div class="mb-4">
   <label class="block text-gray-700">Full Name</label>
-  <input type="text" name="username" value="{{ user.username }}" class="w-full border rounded p-2" />
+  <input type="text" name="username" value="{{ user.username }}" class="w-full border rounded p-2" disabled />
       </div>
 
       <div class="mb-4">
@@ -42,8 +42,19 @@
 
       <div class="mb-4">
   <label class="block text-gray-700">Phone Number</label>
-  <input type="text" name="mobile_number" value="{{ user.mobile_number }}" class="w-full border rounded p-2" />
+  <input type="text" name="mobile_number" value="{{ user.mobile_number }}" class="w-full border rounded p-2" disabled />
       </div>
+
+      <div class="mb-4">
+    <label class="block text-gray-700">Skills</label>
+    <input type="text" 
+           name="skills" 
+           value="{{ user.skills|default_if_none:'' }}" 
+           class="w-full border rounded p-2" 
+           placeholder="eg : Python, Django, SQL" />
+</div>
+
+
 
       <div class="mb-4">
   <label class="block text-gray-700">Profile Picture</label>
@@ -52,7 +63,7 @@
 
       <div class="mb-4">
   <label class="block text-gray-700">Membership Status</label>
-  <p class="font-semibold text-green-600">{{ user.membership_status }}</p>
+  <p class="font-semibold text-green-600">{{ user.current_plan }}</p>
       </div>
 
       <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Update</button>

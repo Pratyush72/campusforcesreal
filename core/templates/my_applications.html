@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen flex flex-col">
+    <!-- Page Content -->
+    <div class="flex-1 max-w-6xl mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-6 text-blue-700"></h1>
+         <!-- Page Heading -->
+    <div class="text-center mb-8 px-2">
+      <h1 class="text-3xl font-bold text-indigo-600">📂 My Applications</h1>
+      <p class="text-gray-500 mt-1 text-sm md:text-base">Track all your Application</p>
+    </div>
+
+
+        {% if applications %}
+        <!-- ✅ Desktop View (Table) -->
+        <div class="hidden md:block overflow-x-auto">
+          <table class="min-w-full border border-gray-300 divide-y divide-gray-200 text-sm md:text-base">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="px-4 py-2 text-left font-semibold text-gray-700">Project</th>
+                <th class="px-4 py-2 text-left font-semibold text-gray-700">Company</th>
+                <th class="px-4 py-2 text-left font-semibold text-gray-700">Location</th>
+                <th class="px-4 py-2 text-left font-semibold text-gray-700">Status</th>
+                <th class="px-4 py-2 text-left font-semibold text-gray-700">Submitted On</th>
+                <th class="px-4 py-2 text-left font-semibold text-gray-700">Rejection Reason</th>
+                <th class="px-4 py-2 text-left font-semibold text-gray-700">Resume</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              {% for app in applications %}
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-2">{{ app.job.title }}</td>
+                <td class="px-4 py-2">{{ app.job.company }}</td>
+                <td class="px-4 py-2">{{ app.job.location }}</td>
+                <td class="px-4 py-2">
+                  {% if app.status == "Rejected" %}
+                    <span class="text-red-600 font-semibold">{{ app.status }}</span>
+                  {% elif app.status == "Hired" %}
+                    <span class="text-green-600 font-semibold">{{ app.status }}</span>
+                  {% elif app.status == "Shortlisted" %}
+                    <span class="text-yellow-600 font-semibold">{{ app.status }}</span>
+                  {% else %}
+                    <span class="text-gray-600">{{ app.status }}</span>
+                  {% endif %}
+                  {% if app.status == "Shortlisted" and app.assessment_link %}
+                    <br>
+                    <a href="{{ app.assessment_link }}" target="_blank" class="text-blue-600 underline">Assessment</a>
+                  {% endif %}
+                </td>
+                <td class="px-4 py-2 whitespace-nowrap">{{ app.applied_at|date:"d-m-Y H:i:s" }}</td>
+                <td class="px-4 py-2">
+                  {% if app.status == "Rejected" %}
+                    <span class="text-red-600">{{ app.rejection_reason }}</span>
+                  {% else %}
+                    -
+                  {% endif %}
+                </td>
+                <td class="px-4 py-2">
+                  {% if app.resume %}
+                    <a href="{% url 'careers:view_resume' app.pk %}" target="_blank" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">View Resume</a>
+                  {% else %}
+                    <span class="text-gray-500">No Resume</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ✅ Mobile View (Cards) -->
+        <div class="block md:hidden space-y-4">
+          {% for app in applications %}
+          <div class="border rounded-lg p-4 shadow bg-white">
+            <h2 class="text-lg font-semibold text-blue-700">{{ app.job.title }}</h2>
+            <p class="text-gray-600">{{ app.job.company }} - {{ app.job.location }}</p>
+            
+            <p class="mt-2">
+              Status: 
+              {% if app.status == "Rejected" %}
+                <span class="text-red-600 font-semibold">{{ app.status }}</span>
+              {% elif app.status == "Hired" %}
+                <span class="text-green-600 font-semibold">{{ app.status }}</span>
+              {% elif app.status == "Shortlisted" %}
+                <span class="text-yellow-600 font-semibold">{{ app.status }}</span>
+              {% else %}
+                <span class="text-gray-600">{{ app.status }}</span>
+              {% endif %}
+            </p>
+
+            {% if app.status == "Rejected" %}
+              <p class="text-red-600 text-sm">Reason: {{ app.rejection_reason }}</p>
+            {% endif %}
+            {% if app.status == "Shortlisted" and app.assessment_link %}
+              <p><a href="{{ app.assessment_link }}" target="_blank" class="text-blue-600 underline">Assessment</a></p>
+            {% endif %}
+
+            <p class="text-sm text-gray-500">Submitted: {{ app.applied_at|date:"d-m-Y H:i:s" }}</p>
+
+            <div class="mt-2">
+              {% if app.resume %}
+                <a href="{% url 'careers:view_resume' app.pk %}" target="_blank" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">View Resume</a>
+              {% else %}
+                <span class="text-gray-500">No Resume</span>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+          <p class="text-gray-600 text-center mt-8">No applications submitted yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

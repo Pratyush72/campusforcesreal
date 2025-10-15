@@ -1,0 +1,44 @@
+<!-- admin_panel/templates/admin_panel/project_form.html -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="bg-gray-800 text-white p-4 flex justify-between items-center shadow-md mb-6">
+<div class="font-bold text-lg">
+  <a href="{% url 'admin_panel:dashboard' %}" class="text-white no-underline">
+    ⚙️ CampusForce Admin Panel
+  </a>
+</div>
+  <div class="space-x-2">
+    <a href="{% url 'admin_panel:manage_users' %}" class="bg-indigo-600 hover:bg-indigo-700 px-3 py-1 rounded text-sm">Users</a>
+    <a href="{% url 'admin_panel:manage_projects' %}" class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm">Projects</a>
+    <a href="{% url 'admin_panel:manage_livework' %}" class="bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded text-sm">LiveWork</a>
+    <a href="{% url 'admin_panel:manage_jobs' %}" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm">Job Apps</a>
+    <a href="/logout/" class="bg-gray-700 hover:bg-gray-900 px-3 py-1 rounded text-sm">Logout</a>
+  </div>
+</div>
+<div class="p-6 max-w-2xl">
+  <h2 class="text-xl font-semibold mb-4">{{ action }} Project</h2>
+  <form method="post">
+    {% csrf_token %}
+    <label class="block">Title</label>
+    <input name="title" value="{{ project.title|default_if_none:'' }}" class="w-full border p-2 rounded mb-2" required>
+    <label class="block">Description</label>
+    <textarea name="description" class="w-full border p-2 rounded mb-2">{{ project.description|default_if_none:'' }}</textarea>
+    <label>Image URL</label>
+    <input name="image_url" value="{{ project.image_url|default_if_none:'' }}" class="w-full border p-2 rounded mb-2">
+    <label>Download URL (file or path)</label>
+    <input name="download_url" value="{{ project.download_url|default_if_none:'' }}" class="w-full border p-2 rounded mb-2">
+    <label>Plan Required</label>
+    <select name="plan_required" class="w-full border p-2 rounded mb-2">
+  <option value="">—</option>
+  <option value="project" {% if project.plan_required == 'project' %}selected{% endif %}>Project Pass</option>
+  <option value="premium" {% if project.plan_required == 'premium' %}selected{% endif %}>Premium</option>
+</select>
+
+    <label class="inline-flex items-center"><input type="checkbox" name="is_free" {% if project.is_free %}checked{% endif %} class="mr-2"> Free</label>
+    <div class="mt-4">
+      <button class="bg-indigo-600 text-white px-4 py-2 rounded">{{ action }}</button>
+      <a href="{% url 'admin_panel:manage_projects' %}" class="ml-2 text-gray-600">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

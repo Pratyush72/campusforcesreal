@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-3xl mx-auto p-6">
+  <h2 class="text-xl font-bold mb-4">{{ other_user.username }}</h2>
+
+  <div class="border rounded-lg p-4 h-96 overflow-y-auto flex flex-col space-y-2">
+    {% for msg in messages %}
+      {% if msg.sender == current_user %}
+        <div class="self-end bg-blue-600 text-white px-3 py-1 rounded-lg max-w-xs">
+          {{ msg.content }}
+        </div>
+      {% else %}
+        <div class="self-start bg-gray-200 px-3 py-1 rounded-lg max-w-xs">
+          {{ msg.content }}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <form method="POST" class="mt-4 flex">
+    {% csrf_token %}
+    <input type="text" name="message" placeholder="Type your message..." class="flex-1 border rounded-l-lg px-4 py-2">
+    <button type="submit" class="bg-blue-600 text-white px-4 rounded-r-lg hover:bg-blue-700">Send</button>
+  </form>
+</div>
+{% endblock %}

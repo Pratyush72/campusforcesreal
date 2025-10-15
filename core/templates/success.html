@@ -1,7 +1,16 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
-<div class="text-center mt-20">
-  <h1 class="text-2xl font-bold text-green-500">🎉 Payment Successful!</h1>
-  <p>You now have {{ plan|title }} access.</p>
+<div class="flex flex-col items-center justify-center min-h-[80vh] text-center">
+    <img src="/static/payment/success.gif"alt="Payment Successful" class="w-34 mb-6">
+    <h1 class="text-5xl font-extrabold text-green-600 mb-4">Payment Successful! 🎉</h1>
+    <p class="text-lg text-gray-600 mb-8">
+        Your payment has been processed successfully. Thank you for your purchase!
+    </p>
+    <a href="{% url 'membership' %}" 
+       class="px-6 py-3 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition">
+       Go to Membership
+    </a>
 </div>
 {% endblock %}

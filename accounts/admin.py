@@ -1,11 +1,13 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser
+from .models import CustomUser, Note, CoinTransaction, MembershipTransaction, LiveWorkSubmission,LiveWorkProject,OTP, UserProfile
+from django.contrib.admin.sites import AlreadyRegistered
 
+# ---------------- CustomUser Admin ----------------
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
-    list_display = ('email', 'is_staff', 'is_active')
+    list_display = ('email', 'is_staff', 'is_active', 'coins', 'membership_start_date', 'membership_end_date')
     ordering = ('email',)
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
@@ -19,11 +21,11 @@ class CustomUserAdmin(UserAdmin):
         }),
     )
 
-from django.contrib import admin
-from .models import CustomUser, Note, CoinTransaction, MembershipTransaction, ProjectSubmission
+# ---------------- Safe registration for other models ----------------
+models = [Note, CoinTransaction, MembershipTransaction, LiveWorkProject, LiveWorkSubmission, OTP, UserProfile]
 
-admin.site.register(CoinTransaction)
-admin.site.register(MembershipTransaction)
-admin.site.register(ProjectSubmission)
-
-
+for model in models:
+    try:
+        admin.site.register(model)
+    except AlreadyRegistered:
+        pass  # Agar already registered hai, ignore

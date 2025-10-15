@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import CustomUserCreationForm, OTPForm, NoteUploadForm
-from .models import CustomUser, Note, CoinTransaction, MembershipTransaction, ProjectSubmission
+from .models import CustomUser, Note, CoinTransaction, MembershipTransaction, LiveWorkSubmission
 import random
 from django.contrib import messages  # For flash messages
 from django.shortcuts import render, redirect
@@ -13,6 +13,10 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 import random
+import razorpay
+from django.conf import settings
+from .models import MembershipTransaction, CoinTransaction, UserProfile
+
 
 # Store OTPs temporarily
 otp_storage = {}
@@ -124,16 +128,23 @@ def login_view(request):
     return render(request, 'accounts/login.html')
 
 # ---------------------- Login profile ---------------------- #
+# ---------------------- Login profile ---------------------- #
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import CustomUser
+
 @login_required
 def profile_view(request):
-    from .models import CustomUser  # Ensure import at the top if not already
     user = CustomUser.objects.get(pk=request.user.pk)
 
     if request.method == 'POST':
-        # Make sure your HTML form uses 'first_name', 'mobile_number', and 'profile_picture' as field names
+        # Update username
         user.username = request.POST.get('username', user.username)
+        # Update mobile number
         user.mobile_number = request.POST.get('mobile_number', user.mobile_number)
-        # Remove membership_status update if not needed, or ensure the field exists
+        # Update skills
+        user.skills = request.POST.get('skills', user.skills)
+        # Update profile picture if uploaded
         if 'profile_pic' in request.FILES:
             user.profile_pic = request.FILES['profile_pic']
 
@@ -141,6 +152,7 @@ def profile_view(request):
         messages.success(request, "Profile updated successfully!")
 
     return render(request, 'profile.html', {'user': user})
+
 
 # ---------------------- Profile Edit View ---------------------- #
 
@@ -242,102 +254,55 @@ def new_password(request):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# -------------------- News-Subscribe ------------
+
+from django.core.mail import EmailMultiAlternatives
+from django.shortcuts import redirect
+from django.contrib import messages
+from django.conf import settings
+from .models import Subscriber  # <-- make sure ye model hai
+
+def newsletter_subscribe(request):
+    if request.method == "POST":
+        email = request.POST.get('email')
+        if not email:
+            messages.error(request, "Please enter a valid email!")
+            return redirect(request.META.get('HTTP_REFERER'))
+
+        # Save subscriber email to database
+        Subscriber.objects.get_or_create(email=email)
+
+        # Send welcome email
+        subject = "Welcome to CAMPUSFORCES Community!"
+        from_email = settings.DEFAULT_FROM_EMAIL
+        to_email = [email]
+
+        html_content = """
+        <html>
+        <body style="font-family: Arial, sans-serif; line-height:1.6; color:#333; text-align:center;">
+            <h1 style="color:#4f46e5; font-size:30px; margin-bottom:20px; text-align:center;">CAMPUSFORCES</h1>
+            <p style="font-size:18px;">Dear Student,</p>
+            <p style="font-size:17px;">Welcome to the <strong>CAMPUSFORCES</strong> community! 🎉</p>
+            <p style="font-size:16px;">By subscribing, you will receive:</p>
+            <ul style="list-style:none; padding:0; text-align:left; display:inline-block;">
+                <li>✅ Updates about live projects and coding challenges.</li>
+                <li>🎓 Free resources to build your skills.</li>
+                <li>💼 Notifications about internships and career opportunities.</li>
+                <li>📘 Tips, tutorials, and guidance from industry experts.</li>
+                <li>🏅 Special CampusCoins rewards for participation.</li>
+            </ul>
+            <p style="margin-top:20px;">We are committed to helping you grow and succeed in your career journey.</p>
+            <p style="margin-top:30px; font-weight:bold;">Happy Learning,<br>The CAMPUSFORCES Team</p>
+        </body>
+        </html>
+        """
+
+        msg = EmailMultiAlternatives(subject, "", from_email, to_email)
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+
+        messages.success(request, "Subscribed successfully! Check your inbox for a welcome email.")
+        return redirect(request.META.get('HTTP_REFERER'))
 
 
 #  -------------------------featured view ------------------------- #
@@ -349,9 +314,58 @@ def featured(request):
 def help_view(request):
     return render(request, 'help.html')
 
+
+# ---------------------- Project View ---------------------- #
+
+from django.shortcuts import render
+from .models import Project
+@login_required
+def projects_view(request):
+    projects = Project.objects.all()  # fetch all projects from DB
+    return render(request, 'projects.html', {'projects': projects})
+
 # ---------------------- Community View ---------------------- #
 def community_view(request):
     return render(request, 'community.html')
+
+
+# ---------------------- Privacy Policy   ---------------------- #
+
+def privacy_view(request):
+    return render (request, 'privacy.html')
+
+# ---------------------- Contact Us Page ---------------------- #
+def contact_view(request):
+    return render(request, 'contact.html')
+
+# ---------------------- Form Submit ---------------------- #
+def contact_submit(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+
+        # Full message to send to admin
+        full_message = f"Name: {name}\nEmail: {email}\nSubject: {subject}\nMessage:\n{message}"
+
+        try:
+            send_mail(
+                subject=f"[Contact Form] {subject}",
+                message=full_message,
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[settings.EMAIL_HOST_USER],  # Admin email
+                fail_silently=False,
+            )
+            messages.success(request, "Your message has been sent successfully!")
+        except Exception as e:
+            messages.error(request, f"Error sending message: {str(e)}")
+
+    return redirect('contact')
+# ---------------------- Term_condition  ---------------------- #
+
+def term_condition_view(request):
+    return render (request, 'term_condition.html')
 
 # ---------------------- meet View ---------------------- #
 def meet_view(request):
@@ -359,29 +373,6 @@ def meet_view(request):
 
 
 # ---------------------- Add Coins View ---------------------- #
-@login_required
-def add_coins(request):
-    if request.method == 'POST':
-        amount = int(request.POST['amount'])
-        reason = request.POST.get('reason', 'Manual Add')
-        
-        if amount <= 0:
-            messages.error(request, "Amount must be positive.")
-            return redirect('add_coins')
-
-        request.user.coins += amount
-        request.user.save()
-
-        CoinTransaction.objects.create(
-            user=request.user,
-            amount=amount,
-            reason=reason
-        )
-        messages.success(request, f"{amount} coins added successfully!")
-        return redirect('dashboard')
-
-    return render(request, 'add_coins.html')
-
 
 # ---------------------- Coin Transaction View ---------------------- #
 # accounts/views.py
@@ -389,26 +380,9 @@ def add_coins(request):
 from django.shortcuts import render
 from .models import CoinTransaction  # ensure yeh model hai tumhare paas
 
-def coin_transaction_view(request):
-    transactions = CoinTransaction.objects.filter(user=request.user).order_by('-timestamp')
-    return render(request, 'coin_transaction.html', {'transactions': transactions})
-
-
-# ---------------------- Live Projects View ---------------------- #
-@login_required
-def live_projects_view(request):
-    projects = ProjectSubmission.objects.filter(user=request.user)
-    return render(request, 'live_projects.html', {'projects': projects})
-
-# ---------------------- Resume Builder View ---------------------- #
-@login_required
-def resume_builder_view(request):
-    if request.method == 'POST':
-        # Handle resume building logic here
-        messages.success(request, "Resume built successfully!")
-        return redirect('dashboard')
-    return render(request, 'resume_builder.html')
-
+# def coin_transaction_view(request):
+#     transactions = CoinTransaction.objects.filter(user=request.user).order_by('-created_at')
+#     return render(request, 'coin_transaction.html', {'transactions': transactions})
 
 # ---------------------- Upload Notes View ---------------------- #
 
@@ -457,198 +431,474 @@ def notes_view(request):
     return render(request, 'notes.html', {'notes': notes})
 
 
-from django.shortcuts import render, redirect
-from .models import LiveProject
-from .forms import LiveProjectForm
+# -------------------- Project Related ----------------------
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import LiveWorkProject, LiveWorkSubmission
+from datetime import datetime
+
+# ----------- Helper Emails -----------
+def send_submission_email(user_email, project_title):
+    send_mail(
+        subject=f'Live Work Submission Received: {project_title}',
+        message=f'Hello,\n\nYour submission for "{project_title}" has been received and is pending review.',
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=[user_email],
+        fail_silently=False,
+    )
+
+def send_status_email(user_email, project_title, status, reason=None):
+    msg = f'Hello,\n\nYour submission for "{project_title}" has been {status}.'
+    if reason:
+        msg += f'\nReason: {reason}'
+    send_mail(
+        subject=f'Live Work Submission {status}: {project_title}',
+        message=msg,
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=[user_email],
+        fail_silently=False,
+    )
+
+# ----------- Live Work / Project View -----------
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import LiveWorkProject, LiveWorkSubmission
 
 @login_required
-def livework_view(request):
-    user = request.user
+def live_work_view(request):
+    # Fetch all projects
+    live_work = LiveWorkProject.objects.all().order_by('-start_date')
 
-    if request.method == 'POST':
-        form = LiveProjectForm(request.POST)
-        if form.is_valid():
-            live_project = form.save(commit=False)
-            live_project.user = user
-            live_project.status = 'Pending'
-            live_project.save()
-            return redirect('livework')
-    else:
-        form = LiveProjectForm()
+    # Fetch user's submissions
+    submissions_qs = LiveWorkSubmission.objects.filter(user=request.user)
+    submissions_dict = {sub.project.id: sub for sub in submissions_qs} if submissions_qs.exists() else {}
 
-    # Fetch all live projects for display
-    live_projects = LiveProject.objects.filter(status='Active').order_by('-created_at')
+    return render(request, 'live_work.html', {
+        'live_work': live_work,
+        'submissions': submissions_dict,
+        'user_plan': request.user.current_plan  # free / project / premium
+    })
 
-    context = {
-        'form': form,
-        'live_projects': live_projects
-    }
-    return render(request, 'livework.html', context)
+# ----------- Start Project / Code Editor -----------
 
+@login_required
+def start_project_view(request, project_id):
+    project = get_object_or_404(LiveWorkProject, id=project_id)
 
-# ---------------------- NOtes view ---------------------- #
+    # Only premium users can start project
+    if request.user.current_plan != 'premium':
+        return redirect('livework')  # redirect free users
 
-# @login_required
-# def upload_notes_view(request):
-#     if request.method == 'POST':
-#         form = NoteUploadForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             note = form.save(commit=False)
-#             note.user = request.user
-#             note.save()
-#             messages.success(request, 'Note uploaded successfully.')
-#             return redirect('upload_notes')  # ya jahan redirect karna ho
-#     else:
-#         form = NoteUploadForm()
-#     return render(request, 'upload_notes.html', {'form': form})
+    return render(request, 'code_editor.html', {'project': project})
 
 
-# ---------------------- Membership View ---------------------- #
-# views.py (Full working Razorpay + coins backend logic)
+# ----------- Submit Live Work -----------
+# views.py
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import LiveWorkProject, LiveWorkSubmission
+
+
+from django.views.decorators.csrf import csrf_exempt
+
+@login_required
+@csrf_exempt  # Django CSRF token is already sent, so optional
+@login_required
+
+@login_required
+def submit_code(request):
+    if request.method == "POST":
+        project_id = request.POST.get("project_id")
+        code = request.POST.get("code")
+        language = request.POST.get("language")
+
+        project = get_object_or_404(LiveWorkProject, id=project_id)
+
+        # Create submission
+        submission = LiveWorkSubmission.objects.create(
+            project=project,
+            user=request.user,
+            code=code,
+            language=language,
+            status="Pending"
+        )
+
+        # Send email to user
+        try:
+            subject = f"Code Submission Received for {project.title}"
+            message = f"Hello {request.user.username},\n\n" \
+                      f"Your code for the project '{project.title}' has been submitted successfully.\n" \
+                      f"Status: {submission.status}\n" \
+                      f"Submitted on: {submission.applied_at.strftime('%d-%m-%Y %H:%M:%S')}\n\n" \
+                      "You will be notified once it is reviewed by admin.\n\nCampusForces Team"
+            send_mail(
+                subject,
+                message,
+                settings.EMAIL_HOST_USER,
+                [request.user.email],
+                fail_silently=False
+            )
+        except Exception as e:
+            print("Email sending error:", e)
+
+        # Return JSON for JS redirect
+        return JsonResponse({"success": True, "message": "Code submitted successfully."})
+
+    return JsonResponse({"success": False, "message": "Invalid request."})
+@login_required
+def my_submissions_view(request):
+    # Fetch all submissions of this user
+    submissions = LiveWorkSubmission.objects.filter(user=request.user).order_by('-applied_at')
+
+    return render(request, 'my_submissions.html', {
+        'submissions': submissions
+    })
+
+# ------Razorpay use------
 import razorpay
+from datetime import date, timedelta
 from django.shortcuts import render, redirect
 from django.conf import settings
-from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
-from django.utils import timezone
-from .models import MembershipTransaction, CoinTransaction, UserProfile
+from django.contrib.auth.decorators import login_required
+from .models import MembershipTransaction, CustomUser
+from django.views.decorators.csrf import csrf_exempt
+
 
 # Initialize Razorpay client
 razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_SECRET_KEY))
 
 
+# ------------------ Membership Page ------------------ #
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.utils.timezone import now
+from django.utils.timezone import now
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+
 @login_required
 def membership_view(request):
     user = request.user
-    profile, created = UserProfile.objects.get_or_create(user=user)  # ✅ FIXED: Always get/create safely
+    today = date.today()
+    coin_value = request.user.coins / 10  # 10 coins = 1 INR
 
-    if request.method == "POST":
-        plan = request.POST.get("plan")
-        use_coins = request.POST.get("use_coins") == "on"
 
-        # Set plan amount
-        amount_rupees = 199 if plan == "project" else 499
-        coins_used = 0
+    # Check if membership expired
+    if user.membership_end_date and user.membership_end_date <= today:
+        user.current_plan = 'free'
+        user.membership_start_date = None
+        user.membership_end_date = None
+        user.save()
 
-        if use_coins:
-            coins_used = min(profile.coins, amount_rupees * 10)  # Max coins allowed = price * 10
-            discount_rupees = coins_used // 10
-            amount_rupees -= discount_rupees
+    return render(request, 'membership.html', {'user': user,'coin_value': coin_value})
 
-        amount_paise = amount_rupees * 100
+# # ------------------ Checkout ------------------ #
+@login_required
+def checkout(request, plan):
+    plans = {'project': {'name': 'Project Pass', 'price': 199},
+             'premium': {'name': 'Premium Pass', 'price': 499}}
+    
+    coin_value = request.user.coins / 10
 
-        payment = razorpay_client.order.create({
-            "amount": amount_paise,
-            "currency": "INR",
-            "payment_capture": "1"
-        })
+    plan_info = plans.get(plan)
+    if not plan_info:
+        messages.error(request, 'Invalid plan selected.')
+        return redirect('membership')
 
+    return render(request, 'checkout.html', {
+        'plan': plan,
+        'plan_name': plan_info['name'],
+        'plan_price': plan_info['price'],
+        'user': request.user,
+        'coin_value': request.user.coins // 10,
+        'coin_value':coin_value
+    })
+
+
+# # ------------------ Process Payment ------------------ #
+# @login_required
+# def process_payment(request):
+#     if request.method != 'POST':
+#         return redirect('membership')
+
+#     user = request.user
+#     plan = request.POST.get('plan')
+#     used_coins = int(request.POST.get('used_coins', 0))
+
+#     plan_prices = {'project': 199, 'premium': 499}
+#     plan_price = plan_prices.get(plan, 0)
+#     discount = used_coins / 10
+#     final_amount = plan_price - discount
+#     if final_amount < 0:
+#         final_amount = 0
+
+#     today = date.today()
+#     end_date = today + timedelta(days=30 if plan == 'project' else 60)
+
+#     # Fully paid by coins
+#     if final_amount == 0:
+#         tx = MembershipTransaction.objects.create(
+#             user=user,
+#             plan=plan,
+#             price=0,
+#             used_coins=used_coins,
+#             status='Approved',
+#             start_date=today,
+#             end_date=end_date
+#         )
+#         # Update user membership info
+#         user.current_plan = plan
+#         user.membership_start_date = today
+#         user.membership_end_date = end_date
+#         user.save()
+
+#         messages.success(request, f'Membership activated using coins! Plan: {plan}')
+#         return redirect('membership')
+
+
+#     # ------------------ Razorpay Payment ------------------ #
+#     payment_amount = int(final_amount * 100)  # in paise
+#     payment_receipt = f'{user.username}_{plan}_{today}'
+
+#     razorpay_order = razorpay_client.order.create(dict(
+#         amount=payment_amount,
+#         currency='INR',
+#         receipt=payment_receipt,
+#         payment_capture='1'
+#     ))
+
+#     # Save transaction in DB
+#     MembershipTransaction.objects.create(
+#         user=user,
+#         plan=plan,
+#         price=final_amount,
+#         used_coins=used_coins,
+#         razorpay_order_id=razorpay_order['id'],
+#         status='Pending',
+#         start_date=today,
+#         end_date=end_date
+#     )
+
+#     return render(request, 'razorpay_checkout.html', {
+#         'order_id': razorpay_order['id'],
+#         'final_amount': final_amount,
+#         'razorpay_key_id': settings.RAZORPAY_KEY_ID,
+#         'user': user,
+#         'plan': plan,
+#         'used_coins': used_coins
+#     })
+
+
+# ------------------ Process Payment ------------------ #
+@login_required
+def process_payment(request):
+    if request.method != 'POST':
+        return redirect('membership')
+
+    user = request.user
+    plan = request.POST.get('plan')
+    used_coins = int(request.POST.get('used_coins', 0))
+
+    plan_prices = {'project': 199, 'premium': 499}
+    plan_price = plan_prices.get(plan, 0)
+
+    discount = used_coins / 10
+    final_amount = plan_price - discount
+    if final_amount < 0:
+        final_amount = 0
+
+    today = date.today()
+    end_date = today + timedelta(days=30 if plan == 'project' else 60)
+
+    # ------------------ Fully paid by coins ------------------
+    if final_amount == 0:
+        if used_coins > user.coins:
+            messages.error(request, "You don't have enough coins!")
+            return redirect('membership')
+
+        # Deduct coins and update user
+        user.coins -= used_coins
+        user.current_plan = plan
+        user.membership_start_date = today
+        user.membership_end_date = end_date
+        user.save()
+
+        # Save transaction
         MembershipTransaction.objects.create(
             user=user,
             plan=plan,
-            razorpay_order_id=payment['id'],
-            amount=amount_rupees,
-            coins_used=coins_used,
-            status="INITIATED"
+            price=0,
+            used_coins=used_coins,
+            status='Coins',  # Coins-only transaction
+            start_date=today,
+            end_date=end_date
         )
 
-        context = {
-            "order_id": payment['id'],
-            "amount_rupees": amount_rupees,
-            "razorpay_key_id": settings.RAZORPAY_KEY_ID,
-            "user": user,
-            "callback_url": "/payment-handler/"
-        }
-        return render(request, "payment_checkout.html", context)
+        messages.success(request, f'Membership activated using coins! Plan: {plan}')
+        return render(request, 'success.html')
 
-    # 🟢 Render membership selection form (GET)
-    coin_value = user.coins // 10  # 💰 10 coins = ₹1
+    # ------------------ Razorpay Payment ------------------
+    payment_amount = int(final_amount * 100)
+    payment_receipt = f'{user.username}_{plan}_{today}'
 
-    context = {
-        "user_coins": user.coins,
-        "coin_value": coin_value
-    }
-    return render(request, "membership.html", context)
+    try:
+        razorpay_order = razorpay_client.order.create(dict(
+            amount=payment_amount,
+            currency='INR',
+            receipt=payment_receipt,
+            payment_capture='1'
+        ))
+    except Exception as e:
+        print("⚠️ Payment Timeout or Error:", e)
+        return render(request, 'timeout.html')
 
+    MembershipTransaction.objects.create(
+        user=user,
+        plan=plan,
+        price=final_amount,
+        used_coins=used_coins,
+        razorpay_order_id=razorpay_order['id'],
+        status='Pending',
+        start_date=today,
+        end_date=end_date
+    )
+
+    return render(request, 'razorpay_checkout.html', {
+        'order_id': razorpay_order['id'],
+        'final_amount': final_amount,
+        'razorpay_key_id': settings.RAZORPAY_KEY_ID,
+        'user': user,
+        'plan': plan,
+        'used_coins': used_coins
+    })
+
+
+
+# ------------------ Payment Timeout ------------------ #
+def payment_timeout(request):
+    return render(request, 'timeout.html')
+
+
+# ------------------ Payment Success ------------------ #
+from django.utils import timezone
+from datetime import timedelta
+from .models import MembershipTransaction, CustomUser
+from django.utils import timezone
+from datetime import timedelta
+from django.contrib import messages
+
+@login_required
 @csrf_exempt
-def payment_handler(request):
-    if request.method == "POST":
-        try:
-            razorpay_payment_id = request.POST.get('razorpay_payment_id')
-            razorpay_order_id = request.POST.get('razorpay_order_id')
-            signature = request.POST.get('razorpay_signature')
-
-            # Verify the payment signature
-            params_dict = {
-                'razorpay_order_id': razorpay_order_id,
-                'razorpay_payment_id': razorpay_payment_id,
-                'razorpay_signature': signature
-            }
-            razorpay_client.utility.verify_payment_signature(params_dict)
-
-            # Update transaction status
-            transaction = MembershipTransaction.objects.get(razorpay_order_id=razorpay_order_id)
-            transaction.status = "SUCCESS"
-            transaction.razorpay_payment_id = razorpay_payment_id
-            transaction.paid_at = timezone.now()
-            transaction.save()
-
-            # Update user profile
-            profile = UserProfile.objects.get(user=transaction.user)
-            if transaction.coins_used:
-                profile.coins -= transaction.coins_used
-                CoinTransaction.objects.create(
-                    user=profile.user,
-                    change=-transaction.coins_used,
-                    reason="Used for membership purchase"
-                )
-            profile.membership_type = transaction.plan
-            profile.membership_expiry = timezone.now() + timezone.timedelta(days=30)
-            profile.save()
-
-            messages.success(request, "Payment successful! Membership activated.")
-            return redirect("membership")
-
-        except Exception as e:
-            print("Payment failed:", str(e))
-            messages.error(request, "Payment failed or verification error. Try again.")
-            return redirect("membership")
-
-    return  redirect("membership")
-
-# accounts/views.py
-
-from django.shortcuts import render
-
 def payment_success(request):
-    return render(request, 'success.html')
+    if request.method != "POST":
+        return redirect('membership')
 
+    payment_id = request.POST.get('razorpay_payment_id')
+    order_id = request.POST.get('razorpay_order_id')
+
+    tx = MembershipTransaction.objects.filter(razorpay_order_id=order_id).first()
+    if tx:
+        tx.payment_id = payment_id
+        tx.status = 'Success'
+        tx.start_date = timezone.now()
+
+        # Set end_date based on plan
+        if tx.plan == 'project':
+            tx.end_date = timezone.now() + timedelta(days=30)
+        elif tx.plan == 'premium':
+            tx.end_date = timezone.now() + timedelta(days=60)
+        tx.save()
+
+        # Update user membership and coins
+        user = tx.user
+        user.current_plan = tx.plan
+        user.membership_start_date = tx.start_date
+        user.membership_end_date = tx.end_date
+
+        # Deduct coins if any
+        if tx.used_coins:
+            user.coins -= tx.used_coins
+            if user.coins < 0:
+                user.coins = 0
+
+        user.save()
+
+        messages.success(request, f"{tx.plan.title()} Membership activated successfully!")
+
+        return render(request, 'success.html')
+
+
+
+# ------------------ Payment Failed ------------------ #
+@login_required
+@csrf_exempt
 def payment_failed(request):
-    return render(request, 'failed.html')
-
-
-
-
+    if request.method == "POST":
+        order_id = request.POST.get('razorpay_order_id')
+        tx = MembershipTransaction.objects.filter(razorpay_order_id=order_id).first()
+        if tx:
+            tx.status = 'Rejected'
+            tx.save()
+        messages.error(request, 'Payment failed or cancelled.')
+        return render(request, 'failed.html')
+    else:
+        # Agar GET request ho to bhi show page
+        return render(request, 'failed.html')
+    
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
+#  ------------------
+#  view membership
+# ----------------
 
+from django.utils import timezone
+from .models import MembershipTransaction
 
-
-# ---------------------- Submit Project View ---------------------- #
 @login_required
-def submit_project(request):
-    if request.method == 'POST':
-        title = request.POST['title']
-        github_link = request.POST['github_link']
-        submission = ProjectSubmission(
-            user=request.user,
-            project_title=title,
-            github_link=github_link
-        )
-        submission.save()
-        messages.success(request, 'Project submitted successfully!')
-        return redirect('dashboard')
-    return render(request, 'accounts/submit_project.html')
+def subscription_view(request):
+    # coin info
+    coin_value = request.user.coins / 10  # 10 coins = 1 INR
+
+    # get latest active membership
+    membership = MembershipTransaction.objects.filter(
+        user=request.user,
+        status='Approved',
+        end_date__gte=timezone.now().date()
+    ).order_by('-end_date').first()
+
+    return render(request, 'accounts/subscription.html', {
+        'coin_value': coin_value,
+        'membership': membership,
+    })
+
+# -------------------- my_transactions_view ------------
+# -------------------------------------------------------
+@login_required
+def my_transactions_view(request):
+    transactions = MembershipTransaction.objects.filter(
+        user=request.user,
+        status__in=['Success', 'Faild', 'Coins']
+    ).order_by('-created_at')
+
+    # Total calculations
+    total_paid = sum(tx.price for tx in transactions)
+    total_coins_used = sum(tx.used_coins for tx in transactions)
+
+    return render(request, 'my_transactions.html', {
+        'transactions': transactions,
+        'total_paid': total_paid,
+        'total_coins_used': total_coins_used
+    })
+
+

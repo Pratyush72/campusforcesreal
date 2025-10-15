@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="min-h-screen bg-gray-100 py-12 px-4">
+  <div class="max-w-5xl mx-auto">
+
+    <!-- Page Heading -->
+    <div class="text-center mb-8 px-2">
+      <h1 class="text-3xl font-bold text-indigo-600">💳 My Transactions</h1>
+      <p class="text-gray-500 mt-1 text-sm md:text-base">Track all your payments and coin usage</p>
+    </div>
+
+    <!-- Summary Card -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 px-2">
+      <div class="bg-white p-4 rounded-xl shadow-md border border-gray-200 text-center">
+        <p class="text-gray-500 font-medium text-sm md:text-base">Total Paid Amount (₹)</p>
+        <p class="text-2xl font-bold text-green-600">
+        ₹{{ total_paid }}
+        </p>
+      </div>
+      <div class="bg-white p-4 rounded-xl shadow-md border border-gray-200 text-center">
+        <p class="text-gray-500 font-medium text-sm md:text-base">Total Coins Used</p>
+        <p class="text-2xl font-bold text-yellow-600">
+        {{ total_coins_used }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="bg-white shadow-lg rounded-2xl overflow-x-auto border border-gray-200 px-2 py-2">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-4 py-2 text-left text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
+            <th class="px-4 py-2 text-left text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">Transaction Type</th>
+            <th class="px-4 py-2 text-left text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">Plan</th>
+            <th class="px-4 py-2 text-left text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">Amount Paid (₹)</th>
+            <th class="px-4 py-2 text-left text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">Coins Used</th>
+            <th class="px-4 py-2 text-left text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">Transaction ID</th>
+            <th class="px-4 py-2 text-left text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">Status</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          {% for tx in transactions %}
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-2 whitespace-nowrap text-sm sm:text-base text-gray-700">{{ tx.created_at|date:"d M Y, H:i" }}</td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm sm:text-base text-gray-700">
+                {% if tx.status == 'Coins' %}
+                  Coins Used
+                {% else %}
+                  Payment
+                {% endif %}
+              </td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm sm:text-base text-gray-700">{{ tx.plan|title|default:'-' }}</td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm sm:text-base text-gray-700">{{ tx.price }}</td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm sm:text-base text-gray-700">{{ tx.used_coins }}</td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm sm:text-base text-gray-700">
+                {% if tx.payment_id %}
+                  {{ tx.payment_id }}
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+              <td class="px-4 py-2 whitespace-nowrap text-sm sm:text-base font-semibold
+                  {% if tx.status == 'Success' %}text-green-600
+                  {% elif tx.status == 'Faild' %}text-red-600
+                  {% else %}text-yellow-600{% endif %}">
+                {{ tx.status }}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="7" class="px-4 py-4 text-center text-gray-500 text-sm">No transactions found.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

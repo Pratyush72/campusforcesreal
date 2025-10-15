@@ -1,28 +1,41 @@
+from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
-from django.contrib.auth.models import User
-from django.conf import settings
-
-from django.db import models
-from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
 
 # ------------------------------
 # 1. Custom User Model
 # ------------------------------
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+from django.utils import timezone
+
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
     coins = models.IntegerField(default=0)
     mobile_number = models.CharField(max_length=15, blank=True)
     profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
-    membership_status = models.CharField(max_length=50, default='Free')  # Optional
+    current_plan = models.CharField(max_length=50, default='free')  # free / project / premium
+    membership_start_date = models.DateField(blank=True, null=True)
+    membership_end_date = models.DateField(blank=True, null=True)
+    skills = models.TextField(blank=True, null=True, help_text="Enter your skills separated by commas, e.g., Python, Django, SQL")
 
 
+    
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
+    def has_active_membership(self):
+        if self.membership_end_date and self.membership_end_date >= timezone.now().date():
+            return True
+        return False
+
     def __str__(self):
         return self.email
+
+
 
 # ------------------------------
 # 2. OTP Model (For Signup Verification)
@@ -34,12 +47,13 @@ class OTP(models.Model):
     is_verified = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.user.email} - OTP: {self.code}" 
+        return f"{self.user.email} - OTP: {self.code}"
 
-# ------------------------------ 
+
+# ------------------------------
 # 3. Notes Model
 # ------------------------------
-class Note(models.Model):   
+class Note(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     tags = models.CharField(max_length=255)
@@ -49,51 +63,43 @@ class Note(models.Model):
     def __str__(self):
         return self.title
 
+
 # ------------------------------
 # 4. Project Submission Model
-# ------------------------------
-class ProjectSubmission(models.Model):  
-    STATUS_CHOICES = [
-        ('Pending', 'Pending'),
-        ('Approved', 'Approved'),
-        ('Rejected', 'Rejected'),
-    ]
-
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    project_title = models.CharField(max_length=255)
-    github_link = models.URLField()
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
-
-    def __str__(self):
-        return f"{self.project_title} - {self.status}"
-
-# ------------------------------
-# 5. Coin Transaction Model
-# ------------------------------
-class CoinTransaction(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    coins = models.IntegerField(default=0)
-    reason = models.CharField(max_length=255)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.user.email} - {self.amount} coins"
-
-# ------------------------------
-# 6. Membership Model
-# ------------------------------
 from django.db import models
 from django.conf import settings
-from datetime import timedelta
-from django.utils import timezone
 
-class CoinWallet(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    coins = models.PositiveIntegerField(default=0)
+# ---------------- Live Work Project ----------------
+class LiveWorkProject(models.Model):
+    PLAN_CHOICES = [
+        ("free", "Free"),
+        ("project", "Project"),
+        ("premium", "Premium")
+    ]
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    start_date = models.DateField()
+    end_date = models.DateField()
+    plan_required = models.CharField(max_length=50, choices=PLAN_CHOICES, default='premium')
+    coins_reward = models.IntegerField(default=50)
 
     def __str__(self):
-        return f"{self.user}'s Wallet: {self.coins} Coins"
+        return self.title
 
+# ---------------- Live Work Submission ----------------
+class LiveWorkSubmission(models.Model):
+    project = models.ForeignKey(LiveWorkProject, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    code = models.TextField()
+    language = models.CharField(max_length=50)
+    status = models.CharField(max_length=20, default='Pending')  # Pending / Approved / Rejected
+    rejection_reason = models.TextField(blank=True, null=True)
+    applied_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.email} - {self.project.title} ({self.status})"
+
+# ----
 # ------------------------------
 # 5. Coin Transaction Model
 # ------------------------------
@@ -104,27 +110,55 @@ class CoinTransaction(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user} - {self.amount} coins for {self.reason}"
+        return f"{self.user.email} - {self.coins} coins for {self.reason}"
 
+
+# ------------------------------
+# 6. Membership Transaction Model
+# ------------------------------
 class MembershipTransaction(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    plan = models.CharField(max_length=100)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    PLAN_CHOICES = [
+        ('project', 'Project Pass'),
+        ('premium', 'Premium Pass'),
+    ]
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    plan = models.CharField(max_length=20, choices=PLAN_CHOICES)
+    price = models.IntegerField()
     used_coins = models.IntegerField(default=0)
-    razorpay_order_id = models.CharField(max_length=100)
+    razorpay_order_id = models.CharField(max_length=100, blank=True, null=True)
     payment_id = models.CharField(max_length=100, blank=True, null=True)
-    status = models.CharField(max_length=20, default='Created')
-    start_date = models.DateTimeField(auto_now_add=True)
-    end_date = models.DateTimeField(blank=True, null=True)
+    status = models.CharField(max_length=20, default='Pending')  # Pending / Success / Failed
+    start_date = models.DateField(blank=True, null=True)
+    end_date = models.DateField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.user.email} - {self.plan} - {self.status}"
+    
     def activate_membership(self):
+        """Call this after payment is successful to activate membership."""
         self.status = 'Success'
+        self.start_date = timezone.now()
+
+        # Set end date based on plan
         if self.plan == 'project':
             self.end_date = timezone.now() + timedelta(days=30)
         elif self.plan == 'premium':
             self.end_date = timezone.now() + timedelta(days=90)
         self.save()
 
+        # Update user membership & coins
+        user = self.user
+        user.membership_status = self.plan.capitalize()
+        user.coins -= self.used_coins
+        if user.coins < 0:
+            user.coins = 0
+        user.save()
+
+
+# ------------------------------
+# 7. User Profile Model
+# ------------------------------
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     profile_photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
@@ -135,7 +169,7 @@ class UserProfile(models.Model):
 
 
 # ------------------------------
-# 6. LIve Projects Model
+# 8. Live Projects Model
 # ------------------------------
 class LiveProject(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -146,3 +180,36 @@ class LiveProject(models.Model):
 
     def __str__(self):
         return f"{self.project_title} - {self.status}"
+
+
+# ------------------------------
+# 9. Clone Projects Model
+# ------------------------------
+
+class Project(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    image_url = models.CharField(max_length=255)  # Image path or URL
+    download_url = models.CharField(max_length=255)  # File path or URL
+    is_free = models.BooleanField(default=False)
+    plan_required = models.CharField(
+        max_length=20,
+        choices=[('project', 'Project Pass'), ('premium', 'Premium Pass')],
+        null=True,
+        blank=True
+    )
+
+    def __str__(self):
+        return self.title
+
+
+# ------------------------------
+# 10. Subscribe_user
+# ------------------------------
+
+class Subscriber(models.Model):
+    email = models.EmailField(unique=True)
+    subscribed_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.email

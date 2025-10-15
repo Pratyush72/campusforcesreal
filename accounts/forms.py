@@ -53,4 +53,5 @@ from django import forms
 class MembershipPurchaseForm(forms.Form):
     plan = forms.ChoiceField(choices=[('project', 'Project Pass'), ('premium', 'Premium Pass')])
     use_coins = forms.BooleanField(required=False)
-        
+
+

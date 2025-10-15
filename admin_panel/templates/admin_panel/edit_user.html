@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="bg-gray-800 text-white p-4 flex justify-between items-center shadow-md mb-6">
+  <div class="font-bold text-lg">
+    <a href="{% url 'admin_panel:dashboard' %}" class="text-white no-underline">
+      ⚙️ CampusForce Admin Panel
+    </a>
+  </div>
+  <div class="space-x-2">
+    <a href="{% url 'admin_panel:manage_users' %}" class="bg-indigo-600 hover:bg-indigo-700 px-3 py-1 rounded text-sm">Users</a>
+    <a href="{% url 'admin_panel:manage_projects' %}" class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm">Projects</a>
+    <a href="{% url 'admin_panel:manage_livework' %}" class="bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded text-sm">LiveWork</a>
+    <a href="{% url 'admin_panel:manage_jobs' %}" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm">Job Apps</a>
+    <a href="/logout/" class="bg-gray-700 hover:bg-gray-900 px-3 py-1 rounded text-sm">Logout</a>
+  </div>
+</div>
+
+<div class="max-w-3xl mx-auto bg-white rounded shadow p-6">
+  <h2 class="text-2xl font-bold mb-6 text-gray-800">Edit User</h2>
+
+  <form method="POST">
+    {% csrf_token %}
+    
+    <div class="mb-4">
+      <label class="block font-semibold mb-1">Username</label>
+      <input type="text" name="username" value="{{ user.username }}" class="w-full border rounded p-2" required>
+    </div>
+
+    <div class="mb-4">
+      <label class="block font-semibold mb-1">Email</label>
+      <input type="email" name="email" value="{{ user.email }}" class="w-full border rounded p-2" required>
+    </div>
+
+    <div class="mb-4">
+      <label class="block font-semibold mb-1">Mobile Number</label>
+      <input type="text" name="mobile_number" value="{{ user.mobile_number }}" class="w-full border rounded p-2">
+    </div>
+
+    <div class="mb-4">
+      <label class="block font-semibold mb-1">Coins</label>
+      <input type="number" name="coins" value="{{ user.coins }}" class="w-full border rounded p-2">
+    </div>
+
+    <div class="mb-4">
+      <label class="block font-semibold mb-1">Current Plan</label>
+      <select name="current_plan" class="w-full border rounded p-2">
+        <option value="free" {% if user.current_plan == 'free' %}selected{% endif %}>Free</option>
+        <option value="project" {% if user.current_plan == 'project' %}selected{% endif %}>Project Pass</option>
+        <option value="premium" {% if user.current_plan == 'premium' %}selected{% endif %}>Premium Pass</option>
+      </select>
+    </div>
+
+    <div class="mb-4">
+      <label class="block font-semibold mb-1">Subscription Start Date</label>
+      <input type="date" name="membership_start_date"
+             value="{{ user.membership_start_date|date:'Y-m-d' }}"
+             class="w-full border rounded p-2">
+    </div>
+
+    <div class="mb-4">
+      <label class="block font-semibold mb-1">Subscription End Date</label>
+      <input type="date" name="membership_end_date"
+             value="{{ user.membership_end_date|date:'Y-m-d' }}"
+             class="w-full border rounded p-2">
+    </div>
+
+    <div class="flex justify-between mt-6">
+      <a href="{% url 'admin_panel:manage_users' %}" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">Cancel</a>
+      <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Save</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+<!-- admin_panel/templates/admin_panel/login.html -->
+{% load static %}
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Admin Login — CampusForces</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+  <div class="max-w-md w-full bg-white p-8 rounded-xl shadow">
+    <h2 class="text-2xl font-bold mb-4">CampusForces — Admin Login</h2>
+    {% if error %}
+      <div class="bg-red-100 text-red-700 p-2 rounded mb-3">{{ error }}</div>
+    {% endif %}
+    <form method="post">
+      {% csrf_token %}
+      <label class="block text-sm font-medium">Email / Username</label>
+      <input name="email" class="w-full border px-3 py-2 rounded mb-3" required>
+      <label class="block text-sm font-medium">Password</label>
+      <input name="password" type="password" class="w-full border px-3 py-2 rounded mb-4" required>
+      <div class="flex justify-between items-center">
+        <button class="bg-indigo-600 text-white px-4 py-2 rounded">Login</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

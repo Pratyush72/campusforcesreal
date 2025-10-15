@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Razorpay Checkout{% endblock %}
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4">
+  <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md border border-gray-200">
+
+    <!-- Branding (Centered) -->
+    <div class="text-center mb-6">
+      <h1 class="text-3xl font-extrabold text-indigo-600 tracking-tight">CAMPUSFORCES</h1>
+      <p class="text-gray-500 text-sm mt-1">Empowering Students | Skill. Build. Succeed.</p>
+    </div>
+
+    <!-- Terms & Conditions -->
+    <div class="bg-gray-50 p-4 rounded-lg mb-6 text-left border border-gray-200">
+      <h2 class="text-lg font-semibold text-gray-800 mb-2">Terms & Conditions</h2>
+      <ul class="list-disc text-sm text-gray-600 pl-5 space-y-1">
+        <li>All payments are secure and processed via Razorpay.</li>
+        <li>Coins redeemed cannot be refunded or reversed.</li>
+        <li>Membership activates instantly after successful payment.</li>
+        <li>CampusForces reserves the right to modify offers anytime.</li>
+        <li>By proceeding, you agree to our Terms of Service and Privacy Policy.</li>
+      </ul>
+    </div>
+
+    <!-- Payment Box -->
+    <div class="text-center">
+      <h1 class="text-2xl font-bold mb-6 text-gray-800">Pay ₹{{ final_amount }}</h1>
+      
+      <form id="razorpayForm" method="POST" action="{% url 'payment_success' %}">
+        {% csrf_token %}
+        <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+        <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
+        <input type="hidden" name="plan" value="{{ plan }}">
+        <input type="hidden" name="used_coins" value="{{ used_coins }}">
+
+        <button type="button" id="rzp-button"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-all duration-300">
+          Pay
+        </button>
+      </form>
+
+      <!-- Security Badge -->
+      <div class="flex items-center justify-center mt-4 text-gray-500 text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 11c0-.6.4-1 1-1h.01M5 13l4 4L19 7M12 22a10 10 0 110-20 10 10 0 010 20z" />
+        </svg>
+        SSL Secured Payment
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+var options = {
+    "key": "{{ razorpay_key_id }}",
+    "amount": "{{ final_amount|floatformat:2|floatformat:0|add:'0' }}00", // in paise
+    "currency": "INR",
+    "name": "CampusForces",
+    "description": "Membership Payment",
+    "order_id": "{{ order_id }}",
+    "handler": function (response){
+        document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+        document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+        document.getElementById('razorpayForm').submit();
+    },
+    "theme": {"color": "#f59e0b"}
+};
+var rzp1 = new Razorpay(options);
+document.getElementById('rzp-button').onclick = function(e){
+    rzp1.open();
+    e.preventDefault();
+}
+rzp1.on('payment.failed', function (response){
+    var form = document.createElement('form');
+    form.method = "POST";
+    form.action = "{% url 'payment_failed' %}";
+
+    var csrfInput = document.createElement('input');
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = '{{ csrf_token }}';
+    form.appendChild(csrfInput);
+
+    var orderInput = document.createElement('input');
+    orderInput.name = 'razorpay_order_id';
+    orderInput.value = response.metadata.order_id;
+    form.appendChild(orderInput);
+
+    document.body.appendChild(form);
+    form.submit();
+});
+
+</script>
+{% endblock %}

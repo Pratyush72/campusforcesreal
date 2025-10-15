@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Admin Submissions{% endblock %}
+{% block content %}
+<div class="max-w-7xl mx-auto px-6 py-12">
+  <h1 class="text-3xl font-bold text-gray-800 mb-6">📝 Project Submissions</h1>
+
+  <table class="min-w-full border border-gray-300 divide-y divide-gray-200">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">User</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Project</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Status</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-gray-200">
+      {% for sub in submissions %}
+      <tr>
+        <td class="px-4 py-2">{{ sub.user.email }}</td>
+        <td class="px-4 py-2">{{ sub.project.title }}</td>
+        <td class="px-4 py-2">{{ sub.status }}</td>
+        <td class="px-4 py-2 space-x-2">
+          {% if sub.status == "Pending" %}
+          <a href="{% url 'admin_update_submission' sub.id 'approve' %}">
+            <button class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded">Approve</button>
+          </a>
+          <a href="{% url 'admin_update_submission' sub.id 'reject' %}?reason=Not%20matching%20requirements">
+            <button class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded">Reject</button>
+          </a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Launchpad{% endblock %}
+
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-10 space-y-10">
+
+    <!-- Career Header -->
+    <div class="bg-white shadow-xl rounded-2xl p-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-blue-700 mb-4">{{ career.title }}</h1>
+       <div class="space-y-2 text-gray-700">
+    <p><span class="font-semibold">🏢 Company:</span> {{ career.company }}</p>
+    <p><span class="font-semibold">📍 Location:</span> {{ career.location }}</p>
+    <p><span class="font-semibold">💼 Job Type:</span> <span class="capitalize">{{ career.job_type }}</span></p>
+    <p><span class="font-semibold">📝 Description:</span> {{ career.description }}</p>
+</div>
+
+    </div>
+
+    <!-- Apply Form / Already Applied -->
+    {% if existing_application %}
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-lg">
+            <p class="text-yellow-700 font-semibold">⚠️ You have already applied for this job.</p>
+        </div>
+    {% else %}
+        <div class="bg-white shadow-xl rounded-2xl p-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">📄 Apply for this Job</h2>
+            <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+
+                <!-- Resume Upload -->
+                <div>
+                    <label class="block mb-2 font-medium text-gray-700">Resume (PDF/DOC)</label>
+                    <input type="file" name="resume" accept=".pdf,.doc,.docx"
+                           class="w-full border rounded-lg px-3 py-2 shadow-sm focus:ring-2 focus:ring-blue-400" required>
+                </div>
+
+                <!-- Cover Letter -->
+                <div>
+                    <label class="block mb-2 font-medium text-gray-700">Cover Letter</label>
+                    <textarea name="cover_letter" rows="5"
+                              class="w-full border rounded-lg px-3 py-2 shadow-sm focus:ring-2 focus:ring-blue-400"
+                              placeholder="Write your cover letter here..." required></textarea>
+                </div>
+
+                <button type="submit"
+                        class="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600
+                               text-white font-semibold px-8 py-3 rounded-lg shadow-lg transition duration-200">
+                    🚀 Submit Application
+                </button>
+            </form>
+        </div>
+    {% endif %}
+
+    <!-- Applications Table (Admin View) -->
+    {% if applications %}
+        <div class="bg-white shadow-xl rounded-2xl p-8 overflow-x-auto">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">📊 Applications</h2>
+            <table class="min-w-full border border-gray-200 divide-y divide-gray-200 text-sm">
+                <thead class="bg-gray-100 text-gray-700">
+                    <tr>
+                        <th class="px-6 py-3 text-left font-semibold">Applicant</th>
+                        <th class="px-6 py-3 text-left font-semibold">Status</th>
+                        <th class="px-6 py-3 text-left font-semibold">Rejection Reason</th>
+                        <th class="px-6 py-3 text-left font-semibold">Applied At</th>
+                        <th class="px-6 py-3 text-left font-semibold">Assessment Link</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-100">
+                    {% for app in applications %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4">{{ app.user.username }}</td>
+                        <td class="px-6 py-4">
+                            {% if app.status == "Approved" %}
+                                <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 font-medium">Approved ✅</span>
+                            {% elif app.status == "Rejected" %}
+                                <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 font-medium">Rejected ❌</span>
+                            {% elif app.status == "Shortlisted" %}
+                                <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 font-medium">Shortlisted ⭐</span>
+                            {% elif app.status == "Hired" %}
+                                <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 font-medium">Hired ⭐</span>
+                            {% else %}
+                                <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-700 font-medium">Pending ⏳</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-gray-600">{{ app.rejection_reason|default:"N/A" }}</td>
+                        <td class="px-6 py-4 text-gray-500">{{ app.applied_at|date:"M d, Y, h:i a" }}</td>
+                        <td class="px-6 py-4">
+                            {% if app.assessment_link %}
+                                <a href="{{ app.assessment_link }}" target="_blank"
+                                   class="text-blue-600 hover:underline">Open Link 🔗</a>
+                            {% else %}
+                                <span class="text-gray-400">N/A</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

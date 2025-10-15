@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4">
+  <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md border border-gray-200">
+
+    <!-- Branding (Centered) -->
+    <div class="text-center mb-6">
+      <h1 class="text-3xl font-extrabold text-indigo-600 tracking-tight">CAMPUSFORCES</h1>
+      <p class="text-gray-500 text-sm mt-1">Empowering Students | Skill. Build. Succeed.</p>
+    </div>
+
+
+    <!-- Coins Terms & Conditions -->
+    <div class="bg-gray-50 p-4 rounded-lg mb-6 text-left border border-gray-200">
+      <h2 class="text-lg font-semibold text-gray-800 mb-2">Coins Terms & Conditions</h2>
+      <ul class="list-disc text-sm text-gray-600 pl-5 space-y-1">
+        <li>Coins redeemed cannot be refunded or reversed.</li>
+        <li>Unused coins remain in your account for future use.</li>
+      </ul>
+    </div>
+
+    <!-- Coins Info -->
+    <div class="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+      <p class="text-gray-700 font-semibold">Plan: <span class="text-yellow-600">{{ plan_name }}</span></p>
+      <p class="text-gray-700 font-semibold">Price: ₹<span id="planPrice">{{ plan_price }}</span></p>
+      <p class="text-gray-700 font-semibold">Your Coins: <span id="userCoins">{{ user.coins }}</span> : ₹{{ coin_value }}</p>
+    </div>
+
+    <!-- Apply Coins Checkbox -->
+    <div class="mb-6 flex items-center bg-gray-50 p-3 rounded-lg border border-gray-200">
+      <input type="checkbox" id="applyCoins" class="mr-2">
+      <label for="applyCoins" class="text-gray-700 font-medium">Use coins to reduce price</label>
+    </div>
+
+    <!-- Final Amount -->
+    <div class="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200 text-center">
+      <p class="text-gray-700 font-semibold text-lg">Final Amount: ₹<span id="finalAmount">{{ plan_price }}</span></p>
+    </div>
+
+
+    <!-- Payment Form -->
+    <form method="POST" id="checkoutForm" action="{% url 'process_payment' %}">
+      {% csrf_token %}
+      <input type="hidden" name="plan" value="{{ plan }}">
+      <input type="hidden" name="used_coins" id="usedCoinsInput" value="0">
+
+      <!-- Buttons -->
+      <button type="submit" id="payWithRazorpay"
+        class="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 font-semibold mb-3 shadow-md transition-all duration-300">
+        Pay with Razorpay
+      </button>
+
+      <button type="submit" id="payWithCoins"
+        class="w-full bg-green-500 text-white py-3 rounded-xl hover:bg-green-600 font-semibold hidden shadow-md transition-all duration-300">
+        Pay with Coins
+      </button>
+    </form>
+       <!-- Secure Payment Info -->
+  <div class="flex items-center justify-center mt-4 text-gray-500 text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 11c0-.6.4-1 1-1h.01M5 13l4 4L19 7M12 22a10 10 0 110-20 10 10 0 010 20z" />
+        </svg>
+        SSL Secured Payment
+      </div>
+
+  </div>
+  
+</div>
+
+
+<script>
+  const planPrice = parseInt('{{ plan_price }}');
+  const userCoins = parseInt('{{ user.coins }}');
+  const applyCoinsCheckbox = document.getElementById('applyCoins');
+  const finalAmountElem = document.getElementById('finalAmount');
+  const usedCoinsInput = document.getElementById('usedCoinsInput');
+  const payWithCoinsBtn = document.getElementById('payWithCoins');
+  const payWithRazorpayBtn = document.getElementById('payWithRazorpay');
+
+  applyCoinsCheckbox.addEventListener('change', () => {
+    let coinsToUse = 0;
+    if (applyCoinsCheckbox.checked) {
+      // Max coins applicable
+      coinsToUse = Math.min(userCoins, planPrice * 10); // 10 coins = 1₹
+    }
+    const discount = coinsToUse / 10;
+    const finalAmount = planPrice - discount;
+    finalAmountElem.textContent = finalAmount.toFixed(2);
+    usedCoinsInput.value = coinsToUse;
+
+    if (finalAmount <= 0) {
+      // Fully paid by coins
+      payWithCoinsBtn.classList.remove('hidden');
+      payWithRazorpayBtn.classList.add('hidden');
+    } else {
+      // Partially paid
+      payWithCoinsBtn.classList.add('hidden');
+      payWithRazorpayBtn.classList.remove('hidden');
+    }
+  });
+</script>
+{% endblock %}

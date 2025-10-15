@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="bg-gray-800 text-white p-4 flex justify-between items-center shadow-md mb-6">
+<div class="font-bold text-lg">
+  <a href="{% url 'admin_panel:dashboard' %}" class="text-white no-underline">
+    ⚙️ CampusForce Admin Panel
+  </a>
+</div>
+  <div class="space-x-2">
+    <a href="{% url 'admin_panel:manage_users' %}" class="bg-indigo-600 hover:bg-indigo-700 px-3 py-1 rounded text-sm">Users</a>
+    <a href="{% url 'admin_panel:manage_projects' %}" class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm">Projects</a>
+    <a href="{% url 'admin_panel:manage_livework' %}" class="bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded text-sm">LiveWork</a>
+    <a href="{% url 'admin_panel:manage_jobs' %}" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm">Job Apps</a>
+    <a href="/logout/" class="bg-gray-700 hover:bg-gray-900 px-3 py-1 rounded text-sm">Logout</a>
+  </div>
+</div>
+<div class="max-w-6xl mx-auto p-6">
+  <h1 class="text-3xl font-bold mb-4">Manage Live Work Projects</h1>
+
+  <!-- Table for LiveWork Projects -->
+  <table class="min-w-full bg-white border rounded shadow">
+    <thead>
+      <tr class="bg-gray-100 border-b">
+        <th class="p-3 text-left">ID</th>
+        <th class="p-3 text-left">Title</th>
+        <th class="p-3 text-left">Description</th>
+        <th class="p-3 text-left">Status</th>
+        <th class="p-3 text-left">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for work in liveworks %}
+      <tr class="border-b">
+        <td class="p-3">{{ work.id }}</td>
+        <td class="p-3">{{ work.title }}</td>
+        <td class="p-3">{{ work.description|truncatechars:60 }}</td>
+        <td class="p-3">{{ work.status }}</td>
+        <td class="p-3">
+          <a href="{% url 'admin_panel:edit_livework' work.id %}" class="bg-blue-600 text-white px-3 py-1 rounded">Edit</a>
+            <form method="post" action="{% url 'admin_panel:delete_livework' work.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="bg-red-600 text-white px-3 py-1 rounded ml-2">Delete</button>
+            </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="5" class="p-3 text-center text-gray-500">No live work projects found</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="mt-6">
+    <a href="{% url 'admin_panel:add_livework' %}" class="bg-green-600 text-white px-4 py-2 rounded">Add New Live Work</a>
+  </div>
+</div>
+{% endblock %}

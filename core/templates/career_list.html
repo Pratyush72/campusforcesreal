@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Launchpad{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-10">
+    <!-- Page Title -->
+    <h1 class="bg-white-100 text-black-700 border border-yellow-300 text-3xl font-bold mb-10 px-8 py-4 rounded-lg shadow-lg max-w-3xl mx-auto text-center font-sans">
+    Career Opportunities
+  </h1>
+
+    <!-- Search & Filter -->
+    <form method="get" class="flex flex-col md:flex-row gap-3 mb-8">
+        <!-- Search Input -->
+        <input type="text" name="q"
+               placeholder="🔍 Search by title, company, location..."
+               value="{{ request.GET.q }}"
+               class="flex-1 border rounded-lg px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+
+        <!-- Job Type Dropdown -->
+        <select name="job_type"
+                class="border rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <option value="all">All Types</option>
+            <option value="full-time">Full Time</option>
+            <option value="part-time">Part Time</option>
+            <option value="internship">Internship</option>
+        </select>
+
+        <!-- Search Button -->
+        <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow">
+            Search
+        </button>
+    </form>
+
+    <!-- My Applications (Authenticated Users Only) -->
+    {% if user.is_authenticated %}
+    <div class="mb-8 text-center">
+        <a href="{% url 'careers:my_applications' %}"
+           class="inline-block bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 
+                  text-white px-6 py-2 rounded-lg font-semibold shadow transition duration-200">
+            📌 My Applications
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Job Listings -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for job in careers %}
+        <div class="border rounded-xl p-5 shadow hover:shadow-lg transition bg-white">
+            <h2 class="text-lg md:text-xl font-semibold text-gray-800 mb-1">
+                {{ job.title }}
+            </h2>
+            <p class="text-gray-600 text-sm mb-2">
+                {{ job.company }} • {{ job.location }}
+            </p>
+            <p class="text-sm text-gray-500 mb-4">
+                🏷 Type: <span class="font-medium">{{ job.get_job_type_display }}</span>
+            </p>
+            <a href="{% url 'careers:career_detail' job.pk %}"
+               class="text-blue-600 hover:text-blue-800 font-semibold underline">
+                View Details →
+            </a>
+        </div>
+        {% empty %}
+        <p class="text-gray-600 col-span-full text-center">No jobs found. Try adjusting your search.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

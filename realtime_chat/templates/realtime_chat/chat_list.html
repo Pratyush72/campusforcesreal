@@ -1,0 +1,260 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Message{% endblock %}
+
+{% block content %}
+
+<div class="max-w-4xl mx-auto p-6">
+  <form method="GET" class="flex mb-4">
+    <input type="text" name="q" value="{{ query }}" placeholder="🔍 Search by username..."
+           class="flex-1 border rounded-l-lg px-4 py-2 focus:ring-2 focus:ring-blue-400">
+    <button type="submit" class="bg-blue-600 text-white px-4 rounded-r-lg hover:bg-blue-700">Search</button>
+  </form>
+
+  <div id="userList" class="space-y-2">
+    {% for user in users %}
+    <div class="flex justify-between items-center p-2 border rounded hover:bg-gray-50 relative user-card" 
+         data-user-id="{{ user.id }}" data-username="{{ user.username }}">
+      <div class="flex items-center space-x-3">
+        {% if user.profile_pic %}
+          <img src="{{ user.profile_pic.url }}" class="w-10 h-10 rounded-full user-img">
+        {% else %}
+          <img src="{% static 'user.png' %}" class="w-10 h-10 rounded-full user-img">
+        {% endif %}
+        <div>
+          <span class="font-medium">{{ user.username }}</span>
+          {% if user.is_online %}
+          <span class="text-green-500 text-xs ml-1">● Online</span>
+          {% else %}
+          <span class="text-gray-400 text-xs ml-1">● Offline</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        {% if user.unread_count > 0 %}
+        <span class="bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded-full animate-pulse">
+          {{ user.unread_count }}
+        </span>
+        {% endif %}
+        <button class="chat-open-btn text-blue-600 hover:underline">
+          <i class="fa-brands fa-whatsapp text-green-500 text-3xl"></i>
+        </button>
+      </div>
+    </div>
+    {% empty %}
+    <p class="text-gray-400 mt-4">No users found.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Chat Popup -->
+<div id="chatPopup" class="hidden fixed bottom-4 right-4 w-96 bg-gray-800 rounded-xl shadow-lg overflow-hidden z-50">
+  <div class="flex justify-between items-center bg-gray-900 p-2 text-white">
+    <img id="chatPopupUserImg" src="{% static 'user.png' %}" class="w-8 h-8 rounded-full">
+    <span id="chatPopupUser" class="ml-2 font-semibold">User</span>
+    <button onclick="closeChat()" class="text-red-500 font-bold ml-auto">&times;</button>
+  </div>
+  
+  <div id="chatPopupMessages" class="p-2 h-64 overflow-y-auto overflow-x-hidden space-y-2 text-white scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-300"></div>
+
+  <div id="typingIndicator" class="text-xs text-gray-200 ml-2 mt-1 hidden">Typing...</div>
+
+  <div class="p-2 bg-gray-700 flex items-center space-x-2 relative">
+    <button id="emojiBtn" class="text-2xl">😊</button>
+    <input type="text" id="chatPopupInput" class="flex-1 rounded-l-lg rounded-r-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-400" placeholder="Type a message">
+    <button type="button" onclick="sendPopupMessage()" class="bg-emerald-500 p-3 rounded-full hover:bg-emerald-600">
+      <i class="fa-solid fa-paper-plane"></i>
+    </button>
+
+    <!-- Emoji Picker -->
+    <div id="emojiPicker" class="hidden absolute bottom-12 left-0 w-64 bg-gray-700 p-2 rounded-lg grid grid-cols-6 gap-2 overflow-y-auto max-h-48 z-50">
+      <span class="emoji cursor-pointer text-xl">😀</span>
+      <span class="emoji cursor-pointer text-xl">😂</span>
+      <span class="emoji cursor-pointer text-xl">😍</span>
+      <span class="emoji cursor-pointer text-xl">😎</span>
+      <span class="emoji cursor-pointer text-xl">🥳</span>
+      <span class="emoji cursor-pointer text-xl">😢</span>
+      <span class="emoji cursor-pointer text-xl">👍</span>
+      <span class="emoji cursor-pointer text-xl">👎</span>
+      <span class="emoji cursor-pointer text-xl">❤️</span>
+      <span class="emoji cursor-pointer text-xl">🔥</span>
+      <span class="emoji cursor-pointer text-xl">💯</span>
+      <span class="emoji cursor-pointer text-xl">✨</span>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentChatUserId = null;
+const container = document.getElementById('chatPopupMessages');
+let isUserScrolling = false;
+let typingTimeout;
+
+// Scroll detection
+container.addEventListener('scroll', () => {
+    const threshold = 50;
+    isUserScrolling = container.scrollHeight - container.scrollTop - container.clientHeight > threshold;
+});
+
+// Date & Time formatting
+function formatMessageDate(timestamp){
+    const msgDate=new Date(timestamp);
+    const now=new Date();
+    const msgDay=new Date(msgDate.getFullYear(), msgDate.getMonth(), msgDate.getDate());
+    const nowDay=new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const diffTime = nowDay - msgDay;
+    const oneDay = 24*60*60*1000;
+    if(diffTime===0) return 'Today';
+    else if(diffTime===oneDay) return 'Yesterday';
+    else return msgDate.toLocaleDateString(undefined,{day:'2-digit',month:'long'});
+}
+function formatMessageTime(timestamp){
+    const msgDate=new Date(timestamp);
+    let hours=msgDate.getHours();
+    let minutes=msgDate.getMinutes();
+    const ampm=hours>=12?'PM':'AM';
+    hours=hours%12||12;
+    minutes=minutes<10?'0'+minutes:minutes;
+    return `${hours}:${minutes} ${ampm}`;
+}
+
+// Render messages with ticks
+function renderMessages(messages, container, currentUserId){
+    let lastDate='';
+    const scrollPos=container.scrollTop;
+    const scrollHeightBefore=container.scrollHeight;
+    container.innerHTML='';
+    messages.forEach(msg=>{
+        const msgDay=formatMessageDate(msg.timestamp);
+        if(msgDay!==lastDate){
+            const dateDiv=document.createElement('div');
+            dateDiv.className='text-center text-gray-400 text-xs my-1';
+            dateDiv.innerText=msgDay;
+            container.appendChild(dateDiv);
+            lastDate=msgDay;
+        }
+        const div=document.createElement('div');
+        div.className=msg.sender_id===currentUserId?
+            'bg-green-500 p-2 rounded max-w-[75%] ml-auto text-white mb-1 break-words flex flex-col':
+            'bg-gray-700 p-2 rounded max-w-[75%] mr-auto text-white mb-1 break-words flex flex-col';
+        const time=formatMessageTime(msg.timestamp);
+        const tick=msg.sender_id===currentUserId? (msg.is_read?'✔✔':'✔') : '';
+        div.innerHTML=`<div>${msg.body}</div>
+                       <div class="flex justify-end items-center space-x-1 mt-1">
+                         <span class="text-xs text-gray-200">${time}</span>
+                         <span class="text-xs">${tick}</span>
+                       </div>`;
+        container.appendChild(div);
+    });
+    if(!isUserScrolling) container.scrollTop=container.scrollHeight;
+    else container.scrollTop=scrollPos+(container.scrollHeight-scrollHeightBefore);
+}
+
+// Fetch messages
+function fetchMessages(){
+    if(!currentChatUserId) return;
+    fetch(`/accounts/chat/messages/${currentChatUserId}/`)
+        .then(r=>r.json())
+        .then(data=>renderMessages(data.messages, container, data.current_user_id));
+}
+
+// Send message
+function sendPopupMessage(){
+    const input=document.getElementById('chatPopupInput');
+    const message=input.value.trim();
+    if(!message||!currentChatUserId) return;
+    fetch(`/accounts/chat/send/${currentChatUserId}/`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','X-CSRFToken':'{{ csrf_token }}'},
+        body:JSON.stringify({message})
+    }).then(r=>r.json())
+      .then(data=>{
+          fetchMessages();
+          input.value='';
+      });
+}
+
+// Typing event: when current user types
+document.getElementById('chatPopupInput').addEventListener('input', function(){
+    if(!currentChatUserId) return;
+    fetch(`/accounts/chat/typing/${currentChatUserId}/`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json','X-CSRFToken':'{{ csrf_token }}'},
+        body: JSON.stringify({typing:true})
+    });
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(()=>{
+        fetch(`/accounts/chat/typing/${currentChatUserId}/`, {
+            method:'POST',
+            headers:{'Content-Type':'application/json','X-CSRFToken':'{{ csrf_token }}'},
+            body: JSON.stringify({typing:false})
+        });
+    }, 2000); // 2 sec after stop typing
+});
+
+// Polling for opposite user typing
+setInterval(()=>{
+    if(!currentChatUserId) return;
+    fetch(`/accounts/chat/typing_status/${currentChatUserId}/`)
+        .then(r => r.json())
+        .then(data => {
+            const indicator = document.getElementById('typingIndicator');
+            if(data.typing) indicator.classList.remove('hidden');
+            else indicator.classList.add('hidden');
+        });
+}, 1000);
+
+
+
+// Open chat
+document.querySelectorAll('.chat-open-btn').forEach(btn=>{
+    btn.addEventListener('click',function(){
+        const userCard=this.closest('.user-card');
+        const userId=userCard.dataset.userId;
+        const username=userCard.dataset.username;
+        const userImgSrc=userCard.querySelector('.user-img').src;
+        currentChatUserId=userId;
+        document.getElementById('chatPopupUser').innerText=username;
+        document.getElementById('chatPopupUserImg').src=userImgSrc;
+        document.getElementById('chatPopup').classList.remove('hidden');
+        fetchMessages();
+    });
+});
+
+function closeChat(){
+    currentChatUserId=null;
+    container.innerHTML='';
+    document.getElementById('chatPopup').classList.add('hidden');
+    document.getElementById('chatPopupInput').value='';
+}
+
+// Enter key send
+document.getElementById('chatPopupInput').addEventListener('keypress',function(e){
+    if(e.key==='Enter'){
+        e.preventDefault();
+        sendPopupMessage();
+    }
+});
+
+// Emoji picker toggle
+const emojiBtn=document.getElementById('emojiBtn');
+const emojiPicker=document.getElementById('emojiPicker');
+emojiBtn.addEventListener('click',()=>emojiPicker.classList.toggle('hidden'));
+
+// Emoji click
+document.querySelectorAll('.emoji').forEach(e=>{
+    e.addEventListener('click',function(){
+        const input=document.getElementById('chatPopupInput');
+        input.value+=this.textContent;
+        emojiPicker.classList.add('hidden'); // auto hide after click
+        input.focus();
+    });
+});
+
+// Input focus hide emoji
+document.getElementById('chatPopupInput').addEventListener('focus',()=>emojiPicker.classList.add('hidden'));
+
+// Fetch messages every second
+setInterval(fetchMessages,1000);
+</script>
+{% endblock %}

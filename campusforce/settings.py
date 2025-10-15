@@ -1,12 +1,14 @@
 from pathlib import Path
+import razorpay
+from django.conf import settings
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'replace-this-with-a-secret-key'
 
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -16,6 +18,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
+    'careers',
+    'realtime_chat',
+    'channels',
+    'admin_panel',
+
 ]
 
 
@@ -49,24 +56,59 @@ TEMPLATES = [
     },
 ]
 
+# ----------------------------
+
 WSGI_APPLICATION = 'campusforce.wsgi.application'
+ASGI_APPLICATION = 'campusforce.asgi.application'
+
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer", 
+    }
+}
+
+
+# ----------------------------
+
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'campusforce_db',
+#         'USER': 'campus_user',
+#         'PASSWORD': 'Campus@2002',
+#         'HOST': 'localhost',
+#         'PORT': '3306',
+#     }
+# }
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'campusforce_db',
-        'USER': 'root',
-        'PASSWORD': 'toor',
+        'USER': 'campus_user',
+        'PASSWORD': 'Campus@2002',
         'HOST': 'localhost',
         'PORT': '3306',
     }
 }
 
+
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-RAZORPAY_KEY_ID = "rzp_test_tV8hhS0olbbfGd"
-RAZORPAY_SECRET_KEY = "bLZMe2pOY0hqOysqLAZriZoX"
+# RAZORPAY_KEY_ID = "rzp_test_tV8hhS0olbbfGd"
+# RAZORPAY_KEY_SECRET = "bLZMe2pOY0hqOysqLAZriZoX"
+
+
+RAZORPAY_KEY_ID = "rzp_live_RSb63M2buy7TOc"
+RAZORPAY_SECRET_KEY = "J3x6K0novYS9ahUSWz6ng6BH"
+
+# RAZORPAY_KEY_ID = "rzp_test_RSffuRbTZLQfzk"
+# RAZORPAY_SECRET_KEY = "arYq72rZ7bolNIGLE68rtCaO"
+
 
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
@@ -101,11 +143,10 @@ AUTH_PASSWORD_VALIDATORS = []
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
-
+TIME_ZONE = 'Asia/Kolkata'
+USE_TZ = True
 USE_I18N = True
 
-USE_TZ = True
 
 STATIC_URL = '/static/'
 
