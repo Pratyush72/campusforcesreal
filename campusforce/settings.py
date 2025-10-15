@@ -150,24 +150,24 @@ USE_I18N = True
 
 import os
 
-# Base directory already defined
+# Base directory
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Static files
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Add this line
+# Templates
+TEMPLATES[0]['DIRS'] = [os.path.join(BASE_DIR, 'templates')]
 
-# Optional: Media files
+# Static files (CSS, JS, Images)
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'core', 'static')]  # fixed here
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # for collectstatic output
+
+# Media files (uploads)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
-STATIC_URL = '/static/'
-
-STATICFILES_DIRS = [BASE_DIR / "core/static"]
-
+# Default auto field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # TEMPLATE DIR setup
-import os
-TEMPLATES[0]['DIRS'] = [os.path.join(BASE_DIR, 'templates')]
+# import os
+# TEMPLATES[0]['DIRS'] = [os.path.join(BASE_DIR, 'templates')]
